@@ -1,140 +1,371 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <title>Umowa o Dzieło - QUIETRITE</title>
-    <style>
-        :root { --accent: #000000; }
-        body { font-family: 'Arial', sans-serif; margin: 0; background: #f4f7f6; font-size: 10px; }
-        .editor-panel { background: #fff; padding: 10px; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .grid-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
-        label { display: block; font-weight: bold; font-size: 8px; color: #666; text-transform: uppercase; }
-        input, textarea, select { width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 10px; }
-        button { background: var(--accent); color: white; border: none; padding: 10px; cursor: pointer; font-weight: bold; width: 100%; text-transform: uppercase; margin-top: 5px; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Umowa o Dzieło - QUIETRITE</title>
 
-        .preview-area { padding: 10px; display: flex; justify-content: center; background: #525659; }
-        .a4-page { 
-            width: 210mm; min-height: 297mm; background: white; padding: 10mm 15mm; 
-            box-sizing: border-box; display: flex; flex-direction: column; color: #000; line-height: 1.3;
-        }
+  <style>
+    :root { --accent: #000000; }
 
-        .header { text-align: center; margin-bottom: 10px; }
-        .logo { max-width: 100px; height: auto; }
-        .title { font-size: 14px; font-weight: bold; border-top: 1.5px solid #000; border-bottom: 1.5px solid #000; padding: 3px 0; margin: 5px 0; text-transform: uppercase; letter-spacing: 2px; }
-        
-        .meta-line { display: flex; justify-content: space-between; font-size: 9px; margin-bottom: 10px; border-bottom: 1px solid #eee; }
-        .parties { display: flex; justify-content: space-between; margin-bottom: 10px; gap: 20px; }
-        .party { width: 48%; font-size: 9px; }
-        .party strong { display: block; border-bottom: 1px solid #000; margin-bottom: 3px; text-transform: uppercase; font-size: 8px; }
-        
-        .section-h { font-weight: bold; margin-top: 10px; font-size: 10px; text-transform: uppercase; border-left: 3px solid #000; padding-left: 6px; }
-        .text { text-align: justify; margin: 2px 0; font-size: 9.5px; }
-        
-        .signatures { margin-top: 40px; display: flex; justify-content: space-between; }
-        .sig-box { width: 40%; border-top: 1px solid #000; text-align: center; padding-top: 4px; font-size: 8px; font-weight: bold; }
+    /* Base */
+    body{
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f4f7f6;
+      font-size: 11px; /* czytelniejsze na A4 */
+      color: #000;
+    }
 
-        @media print {
-            .editor-panel { display: none; }
-            .preview-area { padding: 0; background: white; }
-            .a4-page { box-shadow: none; margin: 0; width: 100%; }
-        }
-    </style>
+    .editor-panel{
+      background: #fff;
+      padding: 10px;
+      border-bottom: 2px solid var(--accent);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .grid-inputs{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 8px;
+      align-items: start;
+    }
+
+    label{
+      display: block;
+      font-weight: bold;
+      font-size: 9px;
+      color: #666;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+
+    input, textarea, select{
+      width: 100%;
+      padding: 6px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 11px;
+      box-sizing: border-box;
+      background: #fff;
+    }
+
+    textarea{ resize: vertical; }
+
+    button{
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      width: 100%;
+      text-transform: uppercase;
+      margin-top: 8px;
+      border-radius: 4px;
+    }
+
+    .preview-area{
+      padding: 12px;
+      display: flex;
+      justify-content: center;
+      background: #525659;
+    }
+
+    .a4-page{
+      width: 210mm;
+      min-height: 297mm;
+      background: #fff;
+      padding: 10mm 15mm;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.35;
+    }
+
+    .header{
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .logo{
+      max-width: 110px;
+      height: auto;
+      display: inline-block;
+      margin-bottom: 6px;
+    }
+
+    .title{
+      font-size: 15px;
+      font-weight: bold;
+      border-top: 1.5px solid #000;
+      border-bottom: 1.5px solid #000;
+      padding: 4px 0;
+      margin: 4px 0 6px 0;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .meta-line{
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 10px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 6px;
+    }
+
+    .parties{
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      gap: 20px;
+    }
+
+    .party{
+      width: 48%;
+      font-size: 10px;
+    }
+
+    .party strong{
+      display: block;
+      border-bottom: 1px solid #000;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      font-size: 9px;
+      padding-bottom: 2px;
+    }
+
+    .section-h{
+      font-weight: bold;
+      margin-top: 10px;
+      font-size: 11px;
+      text-transform: uppercase;
+      border-left: 3px solid #000;
+      padding-left: 6px;
+      break-after: avoid;
+      page-break-after: avoid;
+    }
+
+    .text{
+      text-align: justify;
+      margin: 3px 0;
+      font-size: 10.8px;
+    }
+
+    .signatures{
+      margin-top: 36px;
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .sig-box{
+      width: 40%;
+      border-top: 1px solid #000;
+      text-align: center;
+      padding-top: 6px;
+      font-size: 9px;
+      font-weight: bold;
+    }
+
+    .muted{
+      color: #444;
+      font-size: 10px;
+    }
+
+    /* Print */
+    @page{
+      size: A4;
+      margin: 12mm 15mm;
+    }
+
+    @media print{
+      body{ background: #fff; }
+      .editor-panel{ display: none; }
+      .preview-area{ padding: 0; background: #fff; }
+      .a4-page{
+        box-shadow: none;
+        margin: 0;
+        width: 100%;
+        min-height: auto;
+        padding: 0; /* bo @page robi margines */
+      }
+      /* Zapobiegaj "wiszącym" elementom na nowej stronie */
+      .parties, .signatures{ break-inside: avoid; page-break-inside: avoid; }
+      .section-h{ break-after: avoid; page-break-after: avoid; }
+    }
+  </style>
 </head>
+
 <body>
-
-<div class="editor-panel">
+  <div class="editor-panel">
     <div class="grid-inputs">
-        <div>
-            <label>Nr / Data</label>
-            <input type="text" id="in-nr" value="UOD/01/2026" oninput="update()">
-            <input type="text" id="in-date" value="Olsztyn, 23.02.2026" oninput="update()">
-        </div>
-        <div>
-            <label>Zamawiający</label>
-            <textarea id="in-client" rows="2" oninput="update()">Imię Nazwisko / Firma&#10;Adres Klienta&#10;Email: </textarea>
-        </div>
-        <div>
-            <label>Wykonawca</label>
-            <textarea id="in-me" rows="2" oninput="update()">Krystian Stępniak&#10;Olsztyn 11-041&#10;Email: kontakt@quietrite.pl</textarea>
-        </div>
-        <div>
-            <label>Pakiet</label>
-            <select id="in-service" onchange="updatePrice()">
-                <option value="Pakiet BASIC" data-p="1100,00 PLN" data-type="std">Pakiet BASIC</option>
-                <option value="Pakiet PRO" data-p="2500,00 PLN" data-type="std">Pakiet PRO</option>
-                <option value="Pakiet ELITE" data-p="5000,00 PLN" data-type="elite">Pakiet ELITE</option>
-                <option value="ADS USAGE (30 dni)" data-p="1000,00 PLN" data-type="std">Ads Usage (30 dni)</option>
-            </select>
-            <input type="text" id="in-edit-cost" value="100,00 PLN" oninput="update()" style="margin-top:5px;">
-        </div>
-    </div>
-    <button onclick="window.print()">GENERUJ UMOWĘ</button>
-</div>
+      <div>
+        <label>Nr / Data</label>
+        <input type="text" id="in-nr" value="UOD/01/2026" />
+        <input type="text" id="in-date" value="Olsztyn, 23.02.2026" style="margin-top:6px;" />
+      </div>
 
-<div class="preview-area">
+      <div>
+        <label>Zamawiający</label>
+        <textarea id="in-client" rows="3">Imię Nazwisko / Firma
+Adres Klienta
+Email:</textarea>
+        <div class="muted" style="margin-top:6px;">
+          (opcjonalnie dopisz NIP/PESEL w treści)
+        </div>
+      </div>
+
+      <div>
+        <label>Wykonawca</label>
+        <textarea id="in-me" rows="3">Krystian Stępniak
+Olsztyn 11-041
+Email: kontakt@quietrite.pl</textarea>
+      </div>
+
+      <div>
+        <label>Pakiet</label>
+        <select id="in-service">
+          <option value="Pakiet BASIC" data-p="1100,00 PLN" data-rev="0">Pakiet BASIC</option>
+          <option value="Pakiet PRO" data-p="2500,00 PLN" data-rev="0">Pakiet PRO</option>
+          <option value="Pakiet ELITE" data-p="5000,00 PLN" data-rev="2">Pakiet ELITE</option>
+          <option value="ADS USAGE (30 dni)" data-p="1000,00 PLN" data-rev="0">Ads Usage (30 dni)</option>
+        </select>
+
+        <label style="margin-top:8px;">Koszt dodatkowej tury poprawek</label>
+        <input type="text" id="in-edit-cost" value="100,00 PLN" />
+      </div>
+    </div>
+
+    <button id="btn-print" type="button">GENERUJ UMOWĘ</button>
+  </div>
+
+  <div class="preview-area">
     <div class="a4-page">
-        <div class="header">
-            <img src="logo.PNG" class="logo" id="logo-img" onerror="this.src='logo.png'">
-            <div class="title">Umowa o Dzieło</div>
+      <div class="header">
+        <img src="logo.PNG" class="logo" id="logo-img" alt="QUIETRITE logo" />
+        <div class="title">Umowa o Dzieło</div>
+      </div>
+
+      <div class="meta-line">
+        <span><strong>Nr umowy:</strong> <span id="out-nr"></span></span>
+        <span><strong>Data zawarcia:</strong> <span id="out-date"></span></span>
+      </div>
+
+      <div class="parties">
+        <div class="party">
+          <strong>Zamawiający:</strong>
+          <span id="out-client" style="white-space: pre-wrap;"></span>
         </div>
-
-        <div class="meta-line">
-            <span><strong>Nr umowy:</strong> <span id="out-nr"></span></span>
-            <span><strong>Data zawarcia:</strong> <span id="out-date"></span></span>
+        <div class="party">
+          <strong>Przyjmujący zamówienie:</strong>
+          <span id="out-me" style="white-space: pre-wrap;"></span>
         </div>
+      </div>
 
-        <div class="parties">
-            <div class="party"><strong>Zamawiający:</strong><span id="out-client" style="white-space: pre-wrap;"></span></div>
-            <div class="party"><strong>Przyjmujący zamówienie:</strong><span id="out-me" style="white-space: pre-wrap;"></span></div>
-        </div>
+      <div class="section-h">§1. Przedmiot Umowy i Prawa</div>
+      <div class="text">1. Wykonawca zobowiązuje się do wykonania dzieła: <strong id="out-subject"></strong>.</div>
+      <div class="text">
+        2. Przedmiotem umowy jest gotowy plik wideo w formacie cyfrowym. Wykonawca
+        <strong>nie jest zobowiązany</strong> do przekazania surowych materiałów (RAW),
+        plików projektowych ani elementów składowych, chyba że strony ustalą inaczej w formie pisemnej.
+      </div>
+      <div class="text">
+        3. W zależności od wybranego pakietu: (a) Wykonawca przenosi na Zamawiającego prawa do publikacji organicznej
+        (pakiety treści) albo (b) udziela licencji na publikację płatną (Ads Usage) — zgodnie z zakresem ustalonym w korespondencji e-mail.
+        Prawa/licencja przechodzą po opłaceniu wynagrodzenia.
+      </div>
+      <div class="text">4. Wykonawca zachowuje prawo do wykorzystania dzieła w swoim portfolio.</div>
 
-        <div class="section-h">§1. Przedmiot Umowy i Prawa</div>
-        <div class="text">1. Wykonawca zobowiązuje się do wykonania dzieła: <strong id="out-subject"></strong>.</div>
-        <div class="text">2. Przedmiotem umowy jest gotowy plik wideo w formacie cyfrowym. Wykonawca **nie jest zobowiązany** do przekazania surowych materiałów (RAW), plików projektowych ani elementów składowych, chyba że strony ustalą inaczej w formie pisemnej.</div>
-        <div class="text">3. Wykonawca przenosi na Zamawiającego prawa do publikacji organicznej (pakiety treści) lub udziela licencji na publikację płatną (Ads Usage).</div>
-        <div class="text">4. Wykonawca zachowuje prawo do wykorzystania dzieła w swoim portfolio.</div>
+      <div class="section-h">§2. Wynagrodzenie i Odbiór</div>
+      <div class="text">1. Strony ustalają wynagrodzenie: <strong id="out-price"></strong>.</div>
+      <div class="text">2. Brak uwag w ciągu 3 dni roboczych od wysłania plików uznaje się za odbiór dzieła bez zastrzeżeń.</div>
+      <div class="text" id="revision-text"></div>
+      <div class="text">
+        4. Zapłata nastąpi w ciągu 7 dni od odbioru dzieła, chyba że strony ustalą inaczej w formie e-mail.
+      </div>
 
-        <div class="section-h">§2. Wynagrodzenie i Odbiór</div>
-        <div class="text">1. Strony ustalają wynagrodzenie: <strong id="out-price"></strong>.</div>
-        <div class="text">2. Brak uwag w ciągu 3 dni roboczych od wysłania plików uznaje się za odbiór dzieła bez zastrzeżeń.</div>
-        <div class="text" id="revision-text"></div>
-        <div class="text">4. Zapłata nastąpi w ciągu 7 dni od odbioru dzieła.</div>
+      <div class="section-h">§3. Postanowienia Końcowe</div>
+      <div class="text">1. Komunikacja odbywa się drogą e-mailową na adresy wskazane powyżej.</div>
+      <div class="text">2. W sprawach nieuregulowanych stosuje się przepisy Kodeksu Cywilnego.</div>
 
-        <div class="section-h">§3. Postanowienia Końcowe</div>
-        <div class="text">1. Komunikacja odbywa się drogą e-mailową na adresy wskazane powyżej.</div>
-        <div class="text">2. W sprawach nieuregulowanych stosuje się przepisy Kodeksu Cywilnego.</div>
-
-        <div class="signatures">
-            <div class="sig-box">ZAMAWIAJĄCY</div>
-            <div class="sig-box">PRZYJMUJĄCY ZAMÓWIENIE</div>
-        </div>
+      <div class="signatures">
+        <div class="sig-box">ZAMAWIAJĄCY</div>
+        <div class="sig-box">PRZYJMUJĄCY ZAMÓWIENIE</div>
+      </div>
     </div>
-</div>
+  </div>
 
-<script>
-    function updatePrice() {
-        const sel = document.getElementById('in-service');
-        const opt = sel.options[sel.selectedIndex];
-        const type = opt.getAttribute('data-type');
-        document.getElementById('out-price').innerText = opt.getAttribute('data-p');
-        
-        const revEl = document.getElementById('revision-text');
-        const cost = document.getElementById('in-edit-cost').value;
-        if (type === 'elite') {
-            revEl.innerHTML = `3. W pakiecie ELITE przysługują <strong>2 bezpłatne tury poprawek</strong>. Kolejne tury: <strong>${cost}</strong>.`;
-        } else {
-            revEl.innerHTML = `3. W tym pakiecie każda tura poprawek merytorycznych płatna jest: <strong>${cost}</strong>.`;
-        }
-        update();
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    function safeSetText(outId, value) {
+      const el = $(outId);
+      if (!el) return;
+      el.innerText = value ?? "";
     }
-    function update() {
-        ['nr', 'date', 'client', 'me'].forEach(id => {
-            const el = document.getElementById('out-' + id);
-            if(el) el.innerText = document.getElementById('in-' + id).value;
-        });
-        document.getElementById('out-subject').innerText = document.getElementById('in-service').value;
+
+    function updatePriceAndRevisions() {
+      const sel = $("in-service");
+      const opt = sel.options[sel.selectedIndex];
+      const price = opt.getAttribute("data-p") || "";
+      const freeRevs = parseInt(opt.getAttribute("data-rev") || "0", 10);
+      const cost = $("in-edit-cost").value || "";
+
+      safeSetText("out-price", price);
+
+      const revEl = $("revision-text");
+      // Definicja tury + spójne zasady
+      if (freeRevs > 0) {
+        revEl.innerHTML =
+          `3. W tym pakiecie przysługują <strong>${freeRevs} bezpłatne tury poprawek</strong>. ` +
+          `Każda kolejna tura: <strong>${cost}</strong>. ` +
+          `Tura = jedna zbiorcza lista uwag.`;
+      } else {
+        revEl.innerHTML =
+          `3. W tym pakiecie każda tura poprawek merytorycznych płatna jest: <strong>${cost}</strong>. ` +
+          `Tura = jedna zbiorcza lista uwag.`;
+      }
+
+      // Subject
+      safeSetText("out-subject", sel.value);
     }
-    window.onload = () => { updatePrice(); update(); };
-</script>
+
+    function updateAll() {
+      safeSetText("out-nr", $("in-nr").value);
+      safeSetText("out-date", $("in-date").value);
+      safeSetText("out-client", $("in-client").value);
+      safeSetText("out-me", $("in-me").value);
+      safeSetText("out-subject", $("in-service").value);
+    }
+
+    function init() {
+      // logo fallback (stabilniej niż inline onerror przy zmianach)
+      const logo = $("logo-img");
+      logo.addEventListener("error", () => { logo.src = "logo.png"; }, { once: true });
+
+      // listeners
+      ["in-nr", "in-date", "in-client", "in-me", "in-edit-cost"].forEach(id => {
+        $(id).addEventListener("input", () => { updateAll(); updatePriceAndRevisions(); });
+      });
+
+      $("in-service").addEventListener("change", () => { updateAll(); updatePriceAndRevisions(); });
+
+      $("btn-print").addEventListener("click", () => window.print());
+
+      // first render
+      updateAll();
+      updatePriceAndRevisions();
+    }
+
+    document.addEventListener("DOMContentLoaded", init);
+  </script>
 </body>
 </html>
