@@ -6,7 +6,7 @@
   <title>Generator Licencji Ads Usage — QUIETRITE</title>
 
   <style>
-    :root{ --accent:#000; }
+    :root { --accent:#000; }
 
     body{
       font-family: Arial, sans-serif;
@@ -16,16 +16,63 @@
       color:#000;
     }
 
+    /* TOP BAR */
     .editor-panel{
       background:#fff;
       padding:10px;
       border-bottom:2px solid var(--accent);
       position:sticky;
       top:0;
-      z-index:100;
-      box-shadow:0 2px 5px rgba(0,0,0,.1);
+      z-index:999;
+      box-shadow:0 2px 8px rgba(0,0,0,.12);
     }
 
+    .top-row{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:10px;
+      flex-wrap:wrap;
+    }
+
+    .tabs{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+
+    .tab{
+      border:1px solid #ddd;
+      background:#fff;
+      padding:10px 12px;
+      border-radius:10px;
+      font-weight:800;
+      cursor:pointer;
+      text-transform:uppercase;
+      font-size:12px;
+      letter-spacing:.04em;
+    }
+    .tab.active{
+      border-color:#000;
+      background:#000;
+      color:#fff;
+    }
+
+    .btn{
+      border:none;
+      background:#000;
+      color:#fff;
+      padding:10px 14px;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:800;
+      text-transform:uppercase;
+      font-size:12px;
+      letter-spacing:.04em;
+    }
+
+    /* FORM GRID */
     .grid-inputs{
       display:grid;
       grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
@@ -35,7 +82,7 @@
 
     label{
       display:block;
-      font-weight:bold;
+      font-weight:800;
       font-size:9px;
       color:#666;
       text-transform:uppercase;
@@ -44,10 +91,10 @@
 
     input, textarea, select{
       width:100%;
-      padding:6px;
+      padding:10px;
       border:1px solid #ccc;
-      border-radius:4px;
-      font-size:11px;
+      border-radius:10px;
+      font-size:12px;
       box-sizing:border-box;
       background:#fff;
     }
@@ -59,39 +106,32 @@
       align-items:center;
     }
     .row > *{ flex:1; }
-    .row .tiny{ flex:0 0 88px; }
+    .row .tiny{ flex:0 0 92px; }
 
     .checkline{
       display:flex;
       gap:10px;
-      align-items:center;
-      padding:8px 10px;
+      align-items:flex-start;
+      padding:10px 12px;
       border:1px solid #e6e6e6;
-      border-radius:8px;
+      border-radius:12px;
       background:#fafafa;
       margin-top:8px;
     }
-    .checkline input{ width:auto; }
-
-    button{
-      background:var(--accent);
-      color:#fff;
-      border:none;
-      padding:10px;
-      cursor:pointer;
-      font-weight:bold;
-      width:100%;
-      text-transform:uppercase;
-      margin-top:8px;
-      border-radius:4px;
+    .checkline input{
+      width:auto;
+      margin-top:2px;
+      transform: scale(1.15);
     }
 
-    .preview-area{
+    /* VIEW */
+    .view{
+      display:none;
       padding:12px;
-      display:flex;
       justify-content:center;
       background:#525659;
     }
+    .view.show{ display:flex; }
 
     .a4-page{
       width:210mm;
@@ -104,21 +144,27 @@
       line-height:1.35;
     }
 
-    .header{
-      text-align:center;
-      margin-bottom:10px;
+    /* Make preview manageable on mobile */
+    .a4-scale{
+      transform-origin: top center;
+    }
+    @media (max-width: 520px){
+      .a4-scale{ transform: scale(0.60); }
+    }
+    @media (min-width: 521px) and (max-width: 900px){
+      .a4-scale{ transform: scale(0.75); }
     }
 
+    .header{ text-align:center; margin-bottom:10px; }
     .logo{
       max-width:110px;
       height:auto;
       display:inline-block;
       margin-bottom:6px;
     }
-
     .title{
       font-size:14px;
-      font-weight:bold;
+      font-weight:900;
       border-top:1.5px solid #000;
       border-bottom:1.5px solid #000;
       padding:4px 0;
@@ -156,7 +202,7 @@
     }
 
     .section-h{
-      font-weight:bold;
+      font-weight:900;
       margin-top:10px;
       font-size:11px;
       text-transform:uppercase;
@@ -172,11 +218,7 @@
       font-size:10.8px;
     }
 
-    .bul{
-      margin: 4px 0 4px 18px;
-      color:#000;
-      font-size:10.8px;
-    }
+    .bul{ margin: 4px 0 4px 18px; font-size:10.8px; }
     .bul li{ margin:3px 0; }
 
     .signatures{
@@ -194,217 +236,218 @@
       text-align:center;
       padding-top:6px;
       font-size:9px;
-      font-weight:bold;
+      font-weight:900;
       text-transform:uppercase;
     }
 
-    @page{
-      size:A4;
-      margin:12mm 15mm;
-    }
+    /* PRINT */
+    @page{ size:A4; margin:12mm 15mm; }
     @media print{
       body{ background:#fff; }
       .editor-panel{ display:none; }
-      .preview-area{ padding:0; background:#fff; }
-      .a4-page{
-        width:100%;
-        min-height:auto;
-        padding:0; /* margines robi @page */
-        margin:0;
-      }
+      .view{ display:flex !important; padding:0; background:#fff; }
+      .a4-scale{ transform:none !important; }
+      .a4-page{ width:100%; min-height:auto; padding:0; margin:0; }
+    }
+
+    /* Editor show/hide */
+    .editor-wrap{ display:block; }
+    .editor-wrap.hide{ display:none; }
+
+    .hint{
+      font-size:11px;
+      color:#666;
+      margin-top:8px;
     }
   </style>
 </head>
 
 <body>
   <div class="editor-panel">
-    <div class="grid-inputs">
-      <div>
-        <label>Nr / Data</label>
-        <input type="text" id="in-nr" value="LIC/01/2026" />
-        <input type="text" id="in-date" value="Olsztyn, 23.02.2026" style="margin-top:6px;" />
+    <div class="top-row">
+      <div class="tabs">
+        <button class="tab active" id="tab-edit" type="button">Edytor</button>
+        <button class="tab" id="tab-preview" type="button">Podgląd</button>
       </div>
+      <button class="btn" id="btn-print" type="button">Drukuj / PDF</button>
+    </div>
 
-      <div>
-        <label>Licencjodawca (Twórca)</label>
-        <textarea id="in-licensor" rows="4">Krystian Stępniak
+    <div class="editor-wrap" id="editorWrap">
+      <div class="grid-inputs">
+        <div>
+          <label>Nr / Data</label>
+          <input type="text" id="in-nr" value="LIC/01/2026" />
+          <input type="text" id="in-date" value="Olsztyn, 23.02.2026" style="margin-top:8px;" />
+        </div>
+
+        <div>
+          <label>Licencjodawca (Twórca)</label>
+          <textarea id="in-licensor" rows="5">Krystian Stępniak
 QUIETRITE
 Olsztyn 11-041
 Email: kontakt@quietrite.pl</textarea>
-      </div>
+        </div>
 
-      <div>
-        <label>Licencjobiorca (Zamawiający)</label>
-        <textarea id="in-licensee" rows="4">Nazwa firmy / Imię i nazwisko
+        <div>
+          <label>Licencjobiorca (Zamawiający)</label>
+          <textarea id="in-licensee" rows="5">Nazwa firmy / Imię i nazwisko
 Adres
 NIP:
 Email:</textarea>
-      </div>
+        </div>
 
-      <div>
-        <label>Projekt / Materiał</label>
-        <textarea id="in-project" rows="4">Dotyczy: __________________________________
+        <div>
+          <label>Projekt / Materiał</label>
+          <textarea id="in-project" rows="5">Dotyczy: __________________________________
 Opis materiału (np. UGC Ads 9:16, 30s, 1 szt.)
 Link / nazwa pliku: __________________________</textarea>
-      </div>
-
-      <div>
-        <label>Zakres licencji (platformy)</label>
-        <select id="in-platforms">
-          <option value="Meta Ads (Facebook/Instagram), TikTok Ads, YouTube Ads / Shorts, Google Ads">Meta + TikTok + YouTube + Google</option>
-          <option value="Meta Ads (Facebook/Instagram), TikTok Ads">Meta + TikTok</option>
-          <option value="Meta Ads (Facebook/Instagram)">Tylko Meta</option>
-          <option value="TikTok Ads">Tylko TikTok</option>
-          <option value="YouTube Ads / Shorts">Tylko YouTube</option>
-          <option value="Inne (zgodnie z ustaleniami e-mail)">Inne (e-mail)</option>
-        </select>
-
-        <div class="row" style="margin-top:8px;">
-          <div>
-            <label>Czas trwania</label>
-            <select id="in-term">
-              <option value="30 dni">30 dni</option>
-              <option value="60 dni">60 dni</option>
-              <option value="90 dni">90 dni</option>
-              <option value="12 miesięcy">12 miesięcy</option>
-              <option value="bezterminowo">Bezterminowo</option>
-            </select>
-          </div>
-          <div>
-            <label>Terytorium</label>
-            <select id="in-territory">
-              <option value="Polska">Polska</option>
-              <option value="Unia Europejska">Unia Europejska</option>
-              <option value="Świat">Świat</option>
-            </select>
-          </div>
         </div>
 
-        <div class="row" style="margin-top:8px;">
-          <div>
-            <label>Wynagrodzenie za licencję</label>
-            <input type="text" id="in-fee" value="1000,00 PLN" />
+        <div>
+          <label>Zakres licencji (platformy)</label>
+          <select id="in-platforms">
+            <option value="Meta Ads (Facebook/Instagram), TikTok Ads, YouTube Ads / Shorts, Google Ads">Meta + TikTok + YouTube + Google</option>
+            <option value="Meta Ads (Facebook/Instagram), TikTok Ads">Meta + TikTok</option>
+            <option value="Meta Ads (Facebook/Instagram)">Tylko Meta</option>
+            <option value="TikTok Ads">Tylko TikTok</option>
+            <option value="YouTube Ads / Shorts">Tylko YouTube</option>
+            <option value="Inne (zgodnie z ustaleniami e-mail)">Inne (e-mail)</option>
+          </select>
+
+          <div class="row" style="margin-top:8px;">
+            <div>
+              <label>Czas trwania</label>
+              <select id="in-term">
+                <option value="30 dni">30 dni</option>
+                <option value="60 dni">60 dni</option>
+                <option value="90 dni">90 dni</option>
+                <option value="12 miesięcy">12 miesięcy</option>
+                <option value="bezterminowo">Bezterminowo</option>
+              </select>
+            </div>
+            <div>
+              <label>Terytorium</label>
+              <select id="in-territory">
+                <option value="Polska">Polska</option>
+                <option value="Unia Europejska">Unia Europejska</option>
+                <option value="Świat">Świat</option>
+              </select>
+            </div>
           </div>
-          <div class="tiny">
-            <label>Termin płat.</label>
-            <input type="text" id="in-paydays" value="7 dni" />
+
+          <div class="row" style="margin-top:8px;">
+            <div>
+              <label>Wynagrodzenie za licencję</label>
+              <input type="text" id="in-fee" value="1000,00 PLN" />
+            </div>
+            <div class="tiny">
+              <label>Termin płat.</label>
+              <input type="text" id="in-paydays" value="7 dni" />
+            </div>
           </div>
+
+          <div class="checkline">
+            <input type="checkbox" id="in-whitelist" />
+            <div>
+              <div style="font-weight:900;">Whitelisting / Spark Ads (opcjonalnie)</div>
+              <div style="font-size:11px; color:#666;">
+                Kampanie mogą być prowadzone z konta Twórcy (po osobnych ustaleniach).
+              </div>
+            </div>
+          </div>
+
+          <div class="hint">Tip: Na telefonie wypełnij wszystko w „EDYTOR”, potem przełącz na „PODGLĄD” i dopiero drukuj/PDF.</div>
         </div>
 
-        <div class="checkline">
-          <input type="checkbox" id="in-whitelist" />
-          <div>
-            <div style="font-weight:700;">Whitelisting / Spark Ads (opcjonalnie)</div>
-            <div style="font-size:10px; color:#666;">Kampanie mogą być prowadzone z konta Twórcy (po osobnych ustaleniach).</div>
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <label>Ograniczenia / dodatkowe ustalenia</label>
-        <textarea id="in-restrict" rows="6">Zakaz odsprzedaży i przekazywania osobom trzecim.
+        <div>
+          <label>Ograniczenia / dodatkowe ustalenia</label>
+          <textarea id="in-restrict" rows="8">Zakaz odsprzedaży i przekazywania osobom trzecim.
 Brak użycia w kampaniach politycznych / kontrowersyjnych.
 Dopuszczalne: kadrowanie, skróty, napisy, dopasowanie formatu — bez zmiany sensu przekazu.
 Dodatkowe: ____________________________________________</textarea>
+        </div>
       </div>
     </div>
-
-    <button id="btn-print" type="button">GENERUJ LICENCJĘ (DRUKUJ / PDF)</button>
   </div>
 
-  <div class="preview-area">
-    <div class="a4-page">
-      <div class="header">
-        <img src="logo.PNG" class="logo" id="logo-img" alt="QUIETRITE logo">
-        <div class="title">Załącznik — Licencja Ads Usage</div>
-      </div>
-
-      <div class="meta-line">
-        <span><strong>Nr dokumentu:</strong> <span id="out-nr"></span></span>
-        <span><strong>Data / miejsce:</strong> <span id="out-date"></span></span>
-      </div>
-
-      <div class="parties">
-        <div class="party">
-          <strong>Licencjodawca (Twórca)</strong>
-          <span id="out-licensor" style="white-space:pre-wrap;"></span>
+  <!-- PREVIEW -->
+  <div class="view show" id="previewWrap">
+    <div class="a4-scale">
+      <div class="a4-page">
+        <div class="header">
+          <img src="logo.PNG" class="logo" id="logo-img" alt="QUIETRITE logo">
+          <div class="title">Załącznik — Licencja Ads Usage</div>
         </div>
-        <div class="party">
-          <strong>Licencjobiorca (Zamawiający)</strong>
-          <span id="out-licensee" style="white-space:pre-wrap;"></span>
+
+        <div class="meta-line">
+          <span><strong>Nr dokumentu:</strong> <span id="out-nr"></span></span>
+          <span><strong>Data / miejsce:</strong> <span id="out-date"></span></span>
         </div>
-      </div>
 
-      <div class="section-h">§1. Przedmiot licencji</div>
-      <div class="text">
-        1. Przedmiotem niniejszej licencji jest materiał wideo wskazany poniżej (dalej: „Materiał”):
-        <strong><span id="out-project-inline"></span></strong>
-      </div>
-      <div class="text">
-        2. Materiał stanowi utwór w rozumieniu ustawy o prawie autorskim i prawach pokrewnych.
-      </div>
+        <div class="parties">
+          <div class="party">
+            <strong>Licencjodawca (Twórca)</strong>
+            <span id="out-licensor" style="white-space:pre-wrap;"></span>
+          </div>
+          <div class="party">
+            <strong>Licencjobiorca (Zamawiający)</strong>
+            <span id="out-licensee" style="white-space:pre-wrap;"></span>
+          </div>
+        </div>
 
-      <div class="section-h">§2. Zakres licencji</div>
-      <div class="text">
-        1. Licencjodawca udziela Licencjobiorcy <strong>niewyłącznej licencji</strong> na korzystanie z Materiału
-        w celach marketingowych i reklamowych.
-      </div>
-      <div class="text">2. Licencja obejmuje wykorzystanie na platformach:</div>
-      <ul class="bul">
-        <li><span id="out-platforms"></span></li>
-      </ul>
-      <div class="text">3. Dopuszczalne modyfikacje:</div>
-      <ul class="bul">
-        <li>kadrowanie, skracanie i dostosowanie formatu (np. 9:16 / 1:1 / 16:9),</li>
-        <li>dodanie napisów, grafiki, CTA oraz podkładu muzycznego,</li>
-        <li>zmiany techniczne nie naruszające sensu przekazu.</li>
-      </ul>
-      <div class="text">
-        4. Licencja <strong>nie obejmuje</strong> odsprzedaży Materiału, przekazywania praw osobom trzecim ani użycia w innych projektach
-        bez uprzedniej zgody Licencjodawcy.
-      </div>
+        <div class="section-h">§1. Przedmiot licencji</div>
+        <div class="text">
+          1. Przedmiotem niniejszej licencji jest materiał wideo wskazany poniżej (dalej: „Materiał”):
+          <strong><span id="out-project-inline"></span></strong>
+        </div>
+        <div class="text">2. Materiał stanowi utwór w rozumieniu ustawy o prawie autorskim i prawach pokrewnych.</div>
 
-      <div class="section-h">§3. Czas trwania i terytorium</div>
-      <div class="text">
-        1. Licencja udzielana jest na okres: <strong><span id="out-term"></span></strong>,
-        na terytorium: <strong><span id="out-territory"></span></strong>.
-      </div>
-      <div class="text">
-        2. Po upływie okresu licencji dalsze wykorzystanie Materiału wymaga przedłużenia licencji i opłaty dodatkowej.
-      </div>
+        <div class="section-h">§2. Zakres licencji</div>
+        <div class="text">
+          1. Licencjodawca udziela Licencjobiorcy <strong>niewyłącznej licencji</strong> na korzystanie z Materiału w celach marketingowych i reklamowych.
+        </div>
+        <div class="text">2. Licencja obejmuje wykorzystanie na platformach:</div>
+        <ul class="bul"><li><span id="out-platforms"></span></li></ul>
+        <div class="text">3. Dopuszczalne modyfikacje:</div>
+        <ul class="bul">
+          <li>kadrowanie, skracanie i dostosowanie formatu (np. 9:16 / 1:1 / 16:9),</li>
+          <li>dodanie napisów, grafiki, CTA oraz podkładu muzycznego,</li>
+          <li>zmiany techniczne nie naruszające sensu przekazu.</li>
+        </ul>
+        <div class="text">
+          4. Licencja <strong>nie obejmuje</strong> odsprzedaży Materiału, przekazywania praw osobom trzecim ani użycia w innych projektach bez uprzedniej zgody Licencjodawcy.
+        </div>
 
-      <div class="section-h">§4. Wynagrodzenie i wejście w życie</div>
-      <div class="text">
-        1. Wynagrodzenie za udzielenie licencji wynosi: <strong><span id="out-fee"></span></strong>.
-      </div>
-      <div class="text">
-        2. Licencja wchodzi w życie z chwilą opłacenia wynagrodzenia. Termin płatności: <strong><span id="out-paydays"></span></strong>.
-      </div>
+        <div class="section-h">§3. Czas trwania i terytorium</div>
+        <div class="text">
+          1. Licencja udzielana jest na okres: <strong><span id="out-term"></span></strong>,
+          na terytorium: <strong><span id="out-territory"></span></strong>.
+        </div>
+        <div class="text">2. Po upływie okresu licencji dalsze wykorzystanie Materiału wymaga przedłużenia licencji i opłaty dodatkowej.</div>
 
-      <div class="section-h">§5. Whitelisting</div>
-      <div class="text" id="out-whitelist-text"></div>
+        <div class="section-h">§4. Wynagrodzenie i wejście w życie</div>
+        <div class="text">1. Wynagrodzenie za udzielenie licencji wynosi: <strong><span id="out-fee"></span></strong>.</div>
+        <div class="text">2. Licencja wchodzi w życie z chwilą opłacenia wynagrodzenia. Termin płatności: <strong><span id="out-paydays"></span></strong>.</div>
 
-      <div class="section-h">§6. Ograniczenia i odpowiedzialność</div>
-      <div class="text">1. Ograniczenia / ustalenia dodatkowe:</div>
-      <div class="text" style="white-space:pre-wrap;" id="out-restrict"></div>
-      <div class="text">
-        2. Licencjobiorca odpowiada za prawidłowe oznaczenia reklam (np. #reklama) oraz zgodność emisji z prawem i regulaminami platform.
-      </div>
-      <div class="text">
-        3. Licencjodawca nie ponosi odpowiedzialności za wyniki kampanii reklamowych (np. CTR, CPA, ROAS).
-      </div>
+        <div class="section-h">§5. Whitelisting</div>
+        <div class="text" id="out-whitelist-text"></div>
 
-      <div class="section-h">§7. Postanowienia końcowe</div>
-      <div class="text">
-        1. Licencja ma charakter niewyłączny i nie stanowi przeniesienia autorskich praw majątkowych.
-      </div>
-      <div class="text">
-        2. Wszelkie zmiany wymagają formy pisemnej lub e-mailowej.
-      </div>
+        <div class="section-h">§6. Ograniczenia i odpowiedzialność</div>
+        <div class="text">1. Ograniczenia / ustalenia dodatkowe:</div>
+        <div class="text" style="white-space:pre-wrap;" id="out-restrict"></div>
+        <div class="text">
+          2. Licencjobiorca odpowiada za prawidłowe oznaczenia reklam (np. #reklama) oraz zgodność emisji z prawem i regulaminami platform.
+        </div>
+        <div class="text">3. Licencjodawca nie ponosi odpowiedzialności za wyniki kampanii reklamowych (np. CTR, CPA, ROAS).</div>
 
-      <div class="signatures">
-        <div class="sig-box">Licencjodawca (Twórca)</div>
-        <div class="sig-box">Licencjobiorca (Zamawiający)</div>
+        <div class="section-h">§7. Postanowienia końcowe</div>
+        <div class="text">1. Licencja ma charakter niewyłączny i nie stanowi przeniesienia autorskich praw majątkowych.</div>
+        <div class="text">2. Wszelkie zmiany wymagają formy pisemnej lub e-mailowej.</div>
+
+        <div class="signatures">
+          <div class="sig-box">Licencjodawca (Twórca)</div>
+          <div class="sig-box">Licencjobiorca (Zamawiający)</div>
+        </div>
       </div>
     </div>
   </div>
@@ -424,17 +467,20 @@ Dodatkowe: ____________________________________________</textarea>
       el.innerHTML = html ?? "";
     }
 
+    function firstNonEmptyLine(text) {
+      return (text || "")
+        .split("\n")
+        .map(s => s.trim())
+        .filter(Boolean)[0] || "—";
+    }
+
     function updateAll() {
       setText("out-nr", $("in-nr").value);
       setText("out-date", $("in-date").value);
-
       setText("out-licensor", $("in-licensor").value);
       setText("out-licensee", $("in-licensee").value);
 
-      const proj = $("in-project").value;
-      // wstawiamy tylko krótką wersję inline: pierwsza linia lub całość jeśli krótka
-      const firstLine = (proj || "").split("\n").map(s => s.trim()).filter(Boolean)[0] || "";
-      setText("out-project-inline", firstLine || "—");
+      setText("out-project-inline", firstNonEmptyLine($("in-project").value));
 
       setText("out-platforms", $("in-platforms").value);
       setText("out-term", $("in-term").value);
@@ -460,20 +506,56 @@ Dodatkowe: ____________________________________________</textarea>
       }
     }
 
+    function showTab(which) {
+      const edit = $("editorWrap");
+      const preview = $("previewWrap");
+      const tabEdit = $("tab-edit");
+      const tabPrev = $("tab-preview");
+
+      if (which === "edit") {
+        edit.classList.remove("hide");
+        tabEdit.classList.add("active");
+        tabPrev.classList.remove("active");
+        // na mobile lepiej mieć podgląd widoczny tylko po przełączeniu
+        preview.classList.remove("show");
+      } else {
+        edit.classList.add("hide");
+        tabPrev.classList.add("active");
+        tabEdit.classList.remove("active");
+        preview.classList.add("show");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }
+
     function init() {
+      // domyślnie na telefonie: EDYTOR (żeby dało się wypełnić)
+      showTab("edit");
+
       const logo = $("logo-img");
       logo.addEventListener("error", () => { logo.src = "logo.png"; }, { once: true });
 
-      // Live update
-      [
+      const inputs = [
         "in-nr","in-date","in-licensor","in-licensee","in-project",
         "in-platforms","in-term","in-territory","in-fee","in-paydays","in-restrict"
-      ].forEach(id => $(id).addEventListener("input", updateAll));
+      ];
 
-      ["in-platforms","in-term","in-territory"].forEach(id => $(id).addEventListener("change", updateAll));
+      inputs.forEach(id => {
+        const el = $(id);
+        el.addEventListener("input", updateAll);
+        el.addEventListener("change", updateAll);
+      });
+
       $("in-whitelist").addEventListener("change", updateAll);
 
-      $("btn-print").addEventListener("click", () => window.print());
+      $("btn-print").addEventListener("click", () => {
+        // przed drukiem pokaż podgląd, żeby było pewne co drukujesz
+        showTab("preview");
+        // krótki tick, żeby DOM zdążył się przerysować
+        setTimeout(() => window.print(), 50);
+      });
+
+      $("tab-edit").addEventListener("click", () => showTab("edit"));
+      $("tab-preview").addEventListener("click", () => showTab("preview"));
 
       updateAll();
     }
