@@ -3,51 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator Umów - QUIETRITE</title>
+    <title>Umowa o Dzieło - QUIETRITE</title>
     <style>
         :root { --accent: #000000; }
-        body { font-family: 'Helvetica', 'Arial', sans-serif; margin: 0; background: #f0f2f5; display: flex; flex-direction: column; min-height: 100vh; }
+        body { font-family: 'Helvetica', 'Arial', sans-serif; margin: 0; background: #f4f7f6; display: flex; flex-direction: column; min-height: 100vh; }
         
-        /* Panel Edycji */
-        .editor-panel { background: white; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 100%; box-sizing: border-box; }
-        .grid-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        label { display: block; margin-top: 8px; font-weight: bold; font-size: 0.75rem; color: #666; }
-        input, textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-size: 0.85rem; }
-        button { background: var(--accent); color: white; border: none; padding: 12px; margin-top: 15px; cursor: pointer; font-weight: bold; width: 100%; border-radius: 4px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        .editor-panel { background: #fff; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 100%; box-sizing: border-box; border-bottom: 2px solid var(--accent); }
+        .grid-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
+        label { display: block; margin-top: 8px; font-weight: bold; font-size: 0.75rem; color: #666; text-transform: uppercase; }
+        input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 0.9rem; }
+        button { background: var(--accent); color: white; border: none; padding: 15px; margin-top: 20px; cursor: pointer; font-weight: bold; width: 100%; border-radius: 4px; font-size: 1rem; text-transform: uppercase; letter-spacing: 2px; }
 
-        /* Podgląd Umowy */
-        .preview-area { flex-grow: 1; padding: 20px; display: flex; justify-content: center; background: #525659; overflow-x: auto; }
+        .preview-area { flex-grow: 1; padding: 40px 20px; display: flex; justify-content: center; background: #525659; overflow-x: auto; }
         .a4-page { 
             width: 210mm; 
             min-height: 297mm; 
             background: white; 
-            padding: 15mm 20mm; 
-            box-shadow: 0 0 15px rgba(0,0,0,0.3); 
+            padding: 20mm; 
+            box-shadow: 0 0 20px rgba(0,0,0,0.4); 
             box-sizing: border-box; 
             display: flex;
             flex-direction: column;
             color: #000;
         }
 
-        .header { text-align: center; margin-bottom: 25px; }
-        .logo { max-width: 180px; height: auto; margin-bottom: 10px; }
-        .title { font-size: 1.2rem; font-weight: bold; border-top: 1.5px solid #000; border-bottom: 1.5px solid #000; padding: 8px 0; margin: 10px 0; letter-spacing: 3px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .logo { max-width: 200px; height: auto; margin-bottom: 15px; }
+        .title { font-size: 1.5rem; font-weight: bold; border-top: 2px solid #000; border-bottom: 2px solid #000; padding: 10px 0; margin: 10px 0; letter-spacing: 4px; text-transform: uppercase; }
         
-        .meta { text-align: right; font-size: 0.85rem; margin-bottom: 20px; }
-        .parties { display: flex; justify-content: space-between; gap: 40px; margin-bottom: 30px; }
-        .party { width: 50%; font-size: 0.8rem; line-height: 1.5; }
-        .party strong { display: block; margin-bottom: 5px; border-bottom: 1px solid #eee; text-transform: uppercase; font-size: 0.75rem; }
+        .meta { text-align: right; font-size: 0.9rem; margin-bottom: 30px; }
+        .parties { display: flex; justify-content: space-between; gap: 50px; margin-bottom: 40px; }
+        .party { width: 50%; font-size: 0.9rem; line-height: 1.6; }
+        .party strong { display: block; border-bottom: 1px solid #000; margin-bottom: 5px; font-size: 0.8rem; }
         
-        .section-h { font-weight: bold; margin-top: 20px; margin-bottom: 5px; font-size: 0.85rem; text-transform: uppercase; text-decoration: underline; }
-        .text { font-size: 0.85rem; line-height: 1.6; text-align: justify; margin: 5px 0; }
+        .section-h { font-weight: bold; margin-top: 25px; margin-bottom: 8px; font-size: 1rem; text-transform: uppercase; border-left: 4px solid #000; padding-left: 10px; }
+        .text { font-size: 0.95rem; line-height: 1.6; text-align: justify; margin: 5px 0; }
         
-        .signatures { margin-top: auto; padding-top: 60px; display: flex; justify-content: space-between; }
-        .sig-box { width: 42%; border-top: 1px solid #000; text-align: center; padding-top: 8px; font-size: 0.7rem; font-weight: bold; }
+        .signatures { margin-top: auto; padding-top: 80px; display: flex; justify-content: space-between; }
+        .sig-box { width: 45%; border-top: 1px solid #000; text-align: center; padding-top: 10px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; }
 
         @media print {
             .editor-panel { display: none !important; }
             .preview-area { padding: 0; background: white; }
-            .a4-page { box-shadow: none; width: 100%; margin: 0; padding: 10mm 15mm; }
+            .a4-page { box-shadow: none; width: 100%; margin: 0; padding: 15mm; }
             body { background: white; }
         }
     </style>
@@ -57,56 +55,60 @@
 <div class="editor-panel">
     <div class="grid-inputs">
         <div>
-            <label>Numer i Data</label>
-            <input type="text" id="in-nr" value="NR 01/02/2026" oninput="update()">
+            <label>Numer umowy / Data</label>
+            <input type="text" id="in-nr" value="UOD/01/2026" oninput="update()">
             <input type="text" id="in-date" value="Olsztyn, 23.02.2026" oninput="update()">
         </div>
         <div>
-            <label>Zleceniodawca (Klient)</label>
-            <textarea id="in-client" rows="2" oninput="update()">Klient / Firma&#10;Adres Klienta</textarea>
+            <label>Zamawiający (Klient)</label>
+            <textarea id="in-client" rows="3" oninput="update()">Imię Nazwisko / Firma&#10;Adres Klienta&#10;NIP/PESEL: </textarea>
         </div>
         <div>
-            <label>Wykonawca (Twoje Dane)</label>
+            <label>Przyjmujący zamówienie (Ty)</label>
             <textarea id="in-me" rows="3" oninput="update()">Krystian Stępniak&#10;Olsztyn 11-041&#10;NIP/PESEL: </textarea>
         </div>
         <div>
-            <label>Przedmiot i Kwota</label>
-            <input type="text" id="in-subject" value="Usługa akustyczna / montaż" oninput="update()">
+            <label>Dzieło i Wynagrodzenie</label>
+            <input type="text" id="in-subject" value="Wykonanie adaptacji akustycznej pomieszczenia" oninput="update()">
             <input type="text" id="in-price" value="0,00 PLN" oninput="update()">
         </div>
     </div>
-    <button onclick="window.print()">Drukuj Umowę (PDF)</button>
+    <button onclick="window.print()">Pobierz Umowę o Dzieło (PDF)</button>
 </div>
 
 <div class="preview-area">
     <div class="a4-page">
         <div class="header">
-            <img src="logo.png" class="logo" alt="QUIETRITE" id="logo-img">
-            <div class="title">UMOWA O ŚWIADCZENIE USŁUG</div>
+            <img src="logo.png" class="logo" alt="QUIETRITE" id="logo-img" onerror="this.style.display='none'">
+            <div class="title">Umowa o Dzieło</div>
         </div>
 
         <div class="meta">
-            <strong>Nr:</strong> <span id="out-nr"></span><br>
-            <strong>Data:</strong> <span id="out-date"></span>
+            <strong>Nr umowy:</strong> <span id="out-nr"></span><br>
+            <strong>Data zawarcia:</strong> <span id="out-date"></span>
         </div>
 
         <div class="parties">
-            <div class="party"><strong>ZLECENIODAWCA:</strong><span id="out-client" style="white-space: pre-wrap;"></span></div>
-            <div class="party"><strong>WYKONAWCA:</strong><span id="out-me" style="white-space: pre-wrap;"></span></div>
+            <div class="party"><strong>Zamawiający:</strong><span id="out-client" style="white-space: pre-wrap;"></span></div>
+            <div class="party"><strong>Przyjmujący zamówienie:</strong><span id="out-me" style="white-space: pre-wrap;"></span></div>
         </div>
 
         <div class="section-h">§1. Przedmiot Umowy</div>
-        <div class="text">Wykonawca zobowiązuje się do wykonania prac: <strong id="out-subject"></strong>.</div>
+        <div class="text">1. Przyjmujący zamówienie zobowiązuje się do wykonania dzieła polegającego na: <strong id="out-subject"></strong>.</div>
+        <div class="text">2. Przyjmujący zamówienie oświadcza, że posiada umiejętności i środki niezbędne do wykonania dzieła.</div>
 
         <div class="section-h">§2. Wynagrodzenie</div>
-        <div class="text">Z tytułu wykonania zlecenia Zleceniodawca zapłaci Wykonawcy kwotę: <strong id="out-price"></strong>. Płatność przelewem w terminie 7 dni na wskazany na fakturze/rachunku numer bankowy.</div>
+        <div class="text">1. Za wykonanie dzieła strony ustalają wynagrodzenie w kwocie: <strong id="out-price"></strong>.</div>
+        <div class="text">2. Wypłata wynagrodzenia nastąpi po odebraniu dzieła przez Zamawiającego bez zastrzeżeń, w terminie 7 dni od dnia wystawienia rachunku.</div>
 
         <div class="section-h">§3. Postanowienia Końcowe</div>
-        <div class="text">1. Wszelkie zmiany umowy wymagają formy pisemnej pod rygorem nieważności.<br>2. W sprawach nieuregulowanych zastosowanie mają przepisy Kodeksu Cywilnego.</div>
+        <div class="text">1. Wszelkie zmiany niniejszej umowy wymagają formy pisemnej pod rygorem nieważności.</div>
+        <div class="text">2. W sprawach nieuregulowanych niniejszą umową stosuje się przepisy Kodeksu Cywilnego.</div>
+        <div class="text">3. Umowę sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze stron.</div>
 
         <div class="signatures">
-            <div class="sig-box">Zleceniodawca</div>
-            <div class="sig-box">Wykonawca (QUIETRITE)</div>
+            <div class="sig-box">Zamawiający</div>
+            <div class="sig-box">Przyjmujący zamówienie</div>
         </div>
     </div>
 </div>
@@ -121,10 +123,11 @@
             }
         });
     }
-    // Wymuszenie odświeżenia logo po wczytaniu
+
     window.onload = function() {
+        // Próba wymuszenia załadowania logo
         const img = document.getElementById('logo-img');
-        img.src = 'logo.png?t=' + new Date().getTime(); 
+        img.src = 'logo.png?v=' + Math.random();
         update();
     };
 </script>
