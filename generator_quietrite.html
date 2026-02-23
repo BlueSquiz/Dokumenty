@@ -8,12 +8,14 @@
         :root { --accent: #000000; }
         body { font-family: 'Helvetica', 'Arial', sans-serif; margin: 0; background: #f4f7f6; display: flex; flex-direction: column; min-height: 100vh; }
         
+        /* Panel Edycji */
         .editor-panel { background: #fff; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 100%; box-sizing: border-box; border-bottom: 2px solid var(--accent); }
-        .grid-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
+        .grid-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
         label { display: block; margin-top: 8px; font-weight: bold; font-size: 0.75rem; color: #666; text-transform: uppercase; }
-        input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 0.9rem; }
+        input, textarea, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 0.9rem; }
         button { background: var(--accent); color: white; border: none; padding: 15px; margin-top: 20px; cursor: pointer; font-weight: bold; width: 100%; border-radius: 4px; font-size: 1rem; text-transform: uppercase; letter-spacing: 2px; }
 
+        /* Podgląd Umowy */
         .preview-area { flex-grow: 1; padding: 40px 20px; display: flex; justify-content: center; background: #525659; overflow-x: auto; }
         .a4-page { 
             width: 210mm; 
@@ -39,7 +41,7 @@
         .section-h { font-weight: bold; margin-top: 25px; margin-bottom: 8px; font-size: 1rem; text-transform: uppercase; border-left: 4px solid #000; padding-left: 10px; }
         .text { font-size: 0.95rem; line-height: 1.6; text-align: justify; margin: 5px 0; }
         
-        .signatures { margin-top: auto; padding-top: 80px; display: flex; justify-content: space-between; }
+        .signatures { margin-top: auto; padding-top: 60px; display: flex; justify-content: space-between; }
         .sig-box { width: 45%; border-top: 1px solid #000; text-align: center; padding-top: 10px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; }
 
         @media print {
@@ -64,12 +66,20 @@
             <textarea id="in-client" rows="3" oninput="update()">Imię Nazwisko / Firma&#10;Adres Klienta&#10;NIP/PESEL: </textarea>
         </div>
         <div>
-            <label>Przyjmujący zamówienie (Ty)</label>
+            <label>Przyjmujący zamówienie (Wykonawca)</label>
             <textarea id="in-me" rows="3" oninput="update()">Krystian Stępniak&#10;Olsztyn 11-041&#10;NIP/PESEL: </textarea>
         </div>
         <div>
-            <label>Dzieło i Wynagrodzenie</label>
-            <input type="text" id="in-subject" value="Wykonanie adaptacji akustycznej pomieszczenia" oninput="update()">
+            <label>Wybierz Usługę (Dzieło)</label>
+            <select id="in-service" onchange="update()">
+                <option value="Pakiet BASIC (Scenariusz + hook, wideo 9:16, napisy + montaż)">Pakiet BASIC</option>
+                <option value="Pakiet PRO (3 scenariusze + hooki, wideo 9:16, napisy + montaż, mini plan publikacji/ads)">Pakiet PRO</option>
+                <option value="Pakiet ELITE (6 wideo + test hooków, warianty pod A/B)">Pakiet ELITE</option>
+                <option value="Wykorzystanie w reklamach (Ads Usage) - 30 dni">Reklamy (30 dni)</option>
+                <option value="Strategia treści (Audyt + plan 30 dni)">Strategia (30 dni)</option>
+                <option value="Pełna strategia marki">Pełna strategia marki</option>
+            </select>
+            <label>Wynagrodzenie</label>
             <input type="text" id="in-price" value="0,00 PLN" oninput="update()">
         </div>
     </div>
@@ -95,16 +105,16 @@
 
         <div class="section-h">§1. Przedmiot Umowy</div>
         <div class="text">1. Przyjmujący zamówienie zobowiązuje się do wykonania dzieła polegającego na: <strong id="out-subject"></strong>.</div>
-        <div class="text">2. Przyjmujący zamówienie oświadcza, że posiada umiejętności i środki niezbędne do wykonania dzieła.</div>
+        <div class="text">2. Przyjmujący zamówienie oświadcza, że posiada niezbędne kwalifikacje i zaplecze techniczne do samodzielnego wykonania dzieła.</div>
 
-        <div class="section-h">§2. Wynagrodzenie</div>
-        <div class="text">1. Za wykonanie dzieła strony ustalają wynagrodzenie w kwocie: <strong id="out-price"></strong>.</div>
-        <div class="text">2. Wypłata wynagrodzenia nastąpi po odebraniu dzieła przez Zamawiającego bez zastrzeżeń, w terminie 7 dni od dnia wystawienia rachunku.</div>
+        <div class="section-h">§2. Wynagrodzenie i termin</div>
+        <div class="text">1. Za prawidłowe wykonanie dzieła strony ustalają wynagrodzenie ryczałtowe w kwocie: <strong id="out-price"></strong>.</div>
+        <div class="text">2. Zapłata nastąpi przelewem w terminie 7 dni od dnia bezusterkowego odbioru dzieła przez Zamawiającego.</div>
 
         <div class="section-h">§3. Postanowienia Końcowe</div>
         <div class="text">1. Wszelkie zmiany niniejszej umowy wymagają formy pisemnej pod rygorem nieważności.</div>
-        <div class="text">2. W sprawach nieuregulowanych niniejszą umową stosuje się przepisy Kodeksu Cywilnego.</div>
-        <div class="text">3. Umowę sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze stron.</div>
+        <div class="text">2. W sprawach nieuregulowanych niniejszą umową stosuje się przepisy Kodeksu Cywilnego dotyczące umowy o dzieło.</div>
+        <div class="text">3. Umowę sporządzono w dwóch jednobrzmiących egzemplarzach.</div>
 
         <div class="signatures">
             <div class="sig-box">Zamawiający</div>
@@ -115,17 +125,15 @@
 
 <script>
     function update() {
-        ['nr', 'date', 'client', 'me', 'subject', 'price'].forEach(id => {
-            const input = document.getElementById('in-' + id);
-            const output = document.getElementById('out-' + id);
-            if (input && output) {
-                output.innerText = input.value;
-            }
+        const fields = ['nr', 'date', 'client', 'me', 'price'];
+        fields.forEach(id => {
+            document.getElementById('out-' + id).innerText = document.getElementById('in-' + id).value;
         });
+        // Specjalna obsługa dla przedmiotu dzieła z listy rozwijanej
+        document.getElementById('out-subject').innerText = document.getElementById('in-service').value;
     }
 
     window.onload = function() {
-        // Próba wymuszenia załadowania logo
         const img = document.getElementById('logo-img');
         img.src = 'logo.png?v=' + Math.random();
         update();
