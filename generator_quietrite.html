@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Umów - QUIETRITE</title>
+    <style>
+        :root { --gold: #D4AF37; --dark: #1a1a1a; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; display: flex; flex-direction: row; height: 100vh; }
+        
+        /* Panel boczny z formularzem */
+        .editor-panel { width: 400px; background: white; padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.1); overflow-y: auto; z-index: 10; }
+        h1 { font-size: 1.2rem; color: var(--dark); border-bottom: 2px solid var(--gold); padding-bottom: 10px; }
+        label { display: block; margin-top: 15px; font-weight: bold; font-size: 0.85rem; color: #555; }
+        input, textarea { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; background: var(--gold); color: white; border: none; padding: 12px; margin-top: 20px; cursor: pointer; font-weight: bold; border-radius: 4px; transition: 0.3s; }
+        button:hover { background: #b8962d; }
+
+        /* Podgląd umowy */
+        .preview-panel { flex-grow: 1; display: flex; justify-content: center; align-items: flex-start; overflow-y: auto; padding: 40px; background: #525659; }
+        .a4-page { width: 210mm; min-height: 297mm; background: white; padding: 20mm; box-shadow: 0 0 20px rgba(0,0,0,0.5); box-sizing: border-box; position: relative; }
+
+        /* Stylizacja samej umowy */
+        .contract-header { text-align: center; margin-bottom: 30px; }
+        .contract-logo { max-width: 200px; margin-bottom: 10px; }
+        .contract-title { font-weight: bold; font-size: 1.2rem; margin-bottom: 20px; }
+        .date-place { text-align: right; margin-bottom: 20px; }
+        .parties { display: flex; justify-content: space-between; margin-bottom: 30px; gap: 20px; }
+        .party { width: 48%; border: 1px solid #eee; padding: 10px; font-size: 0.9rem; }
+        .section-title { font-weight: bold; border-bottom: 1px solid var(--gold); margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; }
+        .signatures { margin-top: 60px; display: flex; justify-content: space-between; }
+        .sig-box { border-top: 1px solid #000; width: 40%; text-align: center; padding-top: 5px; font-size: 0.8rem; }
+
+        /* Drukowanie */
+        @media print {
+            .editor-panel { display: none; }
+            .preview-panel { padding: 0; background: white; }
+            .a4-page { box-shadow: none; margin: 0; width: 100%; }
+            button { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="editor-panel">
+    <h1>Edytor Umowy</h1>
+    
+    <label>Numer Umowy</label>
+    <input type="text" id="in-nr" value="01/2026" oninput="update()">
+
+    <label>Miejscowość i Data</label>
+    <input type="text" id="in-date" value="Warszawa, 23.02.2026" oninput="update()">
+
+    <label>Dane Zleceniodawcy (Klienta)</label>
+    <textarea id="in-client" rows="3" oninput="update()">Jan Kowalski&#10;ul. Akustyczna 4, 00-001 Poznań&#10;NIP: 1234567890</textarea>
+
+    <label>Twoje Dane (Wykonawca)</label>
+    <textarea id="in-me" rows="3" oninput="update()">QUIETRITE Marek Nowak&#10;ul. Cicha 10, Mielec&#10;NIP: 0987654321</textarea>
+
+    <label>Przedmiot Umowy</label>
+    <textarea id="in-subject" rows="3" oninput="update()">Montaż paneli akustycznych oraz wygłuszenie pomieszczenia studyjnego zgodnie z projektem.</textarea>
+
+    <label>Wynagrodzenie (PLN)</label>
+    <input type="text" id="in-price" value="5 000,00 PLN" oninput="update()">
+
+    <label>Termin płatności (dni)</label>
+    <input type="text" id="in-term" value="7" oninput="update()">
+
+    <button onclick="window.print()">DRUKUJ DO PDF</button>
+</div>
+
+<div class="preview-panel">
+    <div class="a4-page" id="contract">
+        <div class="contract-header">
+            <img src="https://files.oaiusercontent.com/file-K8yDq5Z9p9Y5x5Z5x5Z5x5Z5" class="contract-logo" alt="QUIETRITE">
+            <div class="contract-title">UMOWA O ŚWIADCZENIE USŁUG NR <span id="out-nr"></span></div>
+        </div>
+
+        <div class="date-place"><span id="out-date"></span> r.</div>
+
+        <div class="parties">
+            <div class="party">
+                <strong>ZLECENIODAWCA:</strong><br>
+                <span id="out-client" style="white-space: pre-wrap;"></span>
+            </div>
+            <div class="party">
+                <strong>WYKONAWCA:</strong><br>
+                <span id="out-me" style="white-space: pre-wrap;"></span>
+            </div>
+        </div>
+
+        <div class="section-title">§1. Przedmiot Umowy</div>
+        <p id="out-subject" style="white-space: pre-wrap;"></p>
+
+        <div class="section-title">§2. Wynagrodzenie</div>
+        <p>1. Z tytułu wykonania zlecenia Zleceniodawca zapłaci Wykonawcy kwotę: <strong id="out-price"></strong>.<br>
+        2. Płatność nastąpi przelewem w terminie <strong id="out-term"></strong> dni od wystawienia faktury na konto Wykonawcy.</p>
+
+        <div class="section-title">§3. Postanowienia Końcowe</div>
+        <p>1. Wszelkie zmiany umowy wymagają formy pisemnej.<br>
+        2. W sprawach nieuregulowanych zastosowanie mają przepisy Kodeksu Cywilnego.<br>
+        3. Umowę sporządzono w dwóch jednobrzmiących egzemplarzach.</p>
+
+        <div class="signatures">
+            <div class="sig-box">Podpis Zleceniodawcy</div>
+            <div class="sig-box">Podpis Wykonawcy (QUIETRITE)</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function update() {
+        const fields = ['nr', 'date', 'client', 'me', 'subject', 'price', 'term'];
+        fields.forEach(field => {
+            document.getElementById('out-' + field).innerText = document.getElementById('in-' + field).value;
+        });
+    }
+    // Inicjalizacja
+    update();
+</script>
+
+</body>
+</html>
