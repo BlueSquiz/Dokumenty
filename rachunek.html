@@ -164,7 +164,7 @@
 
     .summary{
       margin-left: auto;
-      width: 40%;
+      width: 55%;
       margin-top: 14px;
       text-align: right;
       font-size: 12px;
@@ -178,6 +178,13 @@
       border-top: 2px solid #000;
       padding-top: 6px;
       margin-top: 6px;
+    }
+
+    .in-words{
+      margin-top: 6px;
+      font-size: 10.5px;
+      color: #333;
+      text-align: right;
     }
 
     .bank-info{
@@ -230,7 +237,6 @@
       text-transform: uppercase;
     }
 
-    /* Print */
     @page{
       size: A4;
       margin: 12mm 15mm;
@@ -244,7 +250,7 @@
         width: 100%;
         min-height: auto;
         margin: 0;
-        padding: 0; /* margines robi @page */
+        padding: 0;
       }
     }
   </style>
@@ -254,7 +260,7 @@
   <div class="editor-panel">
     <div class="grid-inputs">
       <div>
-        <label>Nr rachunku / Data</label>
+        <label>Nr rachunku / Data wystawienia (dd.mm.rrrr)</label>
         <input type="text" id="in-nr" value="RCH/01/2026" />
         <input type="text" id="in-date" value="23.02.2026" style="margin-top:6px;" />
       </div>
@@ -282,8 +288,9 @@ NIP/PESEL:</textarea>
       <div>
         <label>Numer konta bankowego</label>
         <input type="text" id="in-bank" value="00 0000 0000 0000 0000 0000 0000" />
-        <label style="margin-top:8px;">Termin płatności</label>
-        <input type="text" id="in-due" value="7 dni" />
+
+        <label style="margin-top:8px;">Termin płatności (dni)</label>
+        <input type="number" id="in-due-days" value="7" min="0" step="1" />
       </div>
     </div>
 
@@ -331,6 +338,7 @@ NIP/PESEL:</textarea>
       <div class="summary">
         <div>Suma do zapłaty:</div>
         <div class="total" id="out-price-total"></div>
+        <div class="in-words"><strong>Kwota słownie:</strong> <span id="out-price-words"></span></div>
       </div>
 
       <div class="bank-info">
@@ -363,6 +371,163 @@ NIP/PESEL:</textarea>
       el.innerText = value ?? "";
     }
 
+    // --- DATE: dd.mm.yyyy OR dd-mm-yyyy OR yyyy-mm-dd ---
+    function parsePolishDate(str) {
+      if (!str) return null;
+      const s = String(str).trim();
+
+      // dd.mm.yyyy / dd-mm-yyyy / dd/mm/yyyy
+      let m = s.match(/^(\d{1,2})[.\-\/](\d{1,2})[.\-\/](\d{4})$/);
+      if (m) {
+        const dd = parseInt(m[1], 10);
+        const mm = parseInt(m[2], 10) - 1;
+        const yy = parseInt(m[3], 10);
+        const d = new Date(yy, mm, dd);
+        // walidacja (np. 31.02)
+        if (d.getFullYear() === yy && d.getMonth() === mm && d.getDate() === dd) return d;
+        return null;
+      }
+
+      // yyyy-mm-dd
+      m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+      if (m) {
+        const yy = parseInt(m[1], 10);
+        const mm = parseInt(m[2], 10) - 1;
+        const dd = parseInt(m[3], 10);
+        const d = new Date(yy, mm, dd);
+        if (d.getFullYear() === yy && d.getMonth() === mm && d.getDate() === dd) return d;
+        return null;
+      }
+
+      return null;
+    }
+
+    function formatDatePL(d) {
+      const dd = String(d.getDate()).padStart(2, "0");
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const yy = d.getFullYear();
+      return `${dd}.${mm}.${yy}`;
+    }
+
+    function addDays(dateObj, days) {
+      const d = new Date(dateObj);
+      d.setDate(d.getDate() + days);
+      return d;
+    }
+
+    // --- PRICE PARSE: "2500,00 PLN" -> 2500.00 ---
+    function parsePriceToNumber(str) {
+      if (!str) return NaN;
+      let s = String(str).toUpperCase();
+
+      // usuń walutę i spacje nierozdzielające
+      s = s.replace(/\s|PLN|ZŁ|ZL/g, "");
+
+      // zostaw cyfry, kropki, przecinki
+      s = s.replace(/[^0-9,.\-]/g, "");
+
+      // jeśli są i kropki i przecinki, zakładamy: kropki = tys., przecinek = grosze
+      // np. 1.234,56
+      if (s.includes(",") && s.includes(".")) {
+        s = s.replace(/\./g, "");
+        s = s.replace(",", ".");
+      } else {
+        // jeśli tylko przecinek -> zamień na kropkę
+        s = s.replace(",", ".");
+      }
+
+      const n = parseFloat(s);
+      return Number.isFinite(n) ? n : NaN;
+    }
+
+    // --- PL WORDS ---
+    const ONES = ["", "jeden", "dwa", "trzy", "cztery", "pięć", "sześć", "siedem", "osiem", "dziewięć"];
+    const TEENS = ["dziesięć","jedenaście","dwanaście","trzynaście","czternaście","piętnaście","szesnaście","siedemnaście","osiemnaście","dziewiętnaście"];
+    const TENS = ["","dziesięć","dwadzieścia","trzydzieści","czterdzieści","pięćdziesiąt","sześćdziesiąt","siedemdziesiąt","osiemdziesiąt","dziewięćdziesiąt"];
+    const HUNDREDS = ["","sto","dwieście","trzysta","czterysta","pięćset","sześćset","siedemset","osiemset","dziewięćset"];
+
+    function pluralPL(n, forms) {
+      // forms: [singular, few, many] e.g. ["złoty","złote","złotych"]
+      const mod10 = n % 10;
+      const mod100 = n % 100;
+      if (n === 1) return forms[0];
+      if (mod10 >= 2 && mod10 <= 4 && !(mod100 >= 12 && mod100 <= 14)) return forms[1];
+      return forms[2];
+    }
+
+    function tripletToWords(n) { // 0..999
+      const h = Math.floor(n / 100);
+      const t = Math.floor((n % 100) / 10);
+      const o = n % 10;
+
+      const parts = [];
+      if (h) parts.push(HUNDREDS[h]);
+
+      if (t === 1) {
+        parts.push(TEENS[o]);
+      } else {
+        if (t) parts.push(TENS[t]);
+        if (o) parts.push(ONES[o]);
+      }
+      return parts.join(" ").trim();
+    }
+
+    function numberToWordsPL(n) {
+      if (n === 0) return "zero";
+
+      const groups = [
+        { forms: ["", "", ""], value: 0 }, // placeholder (units)
+        { forms: ["tysiąc", "tysiące", "tysięcy"], value: 0 },
+        { forms: ["milion", "miliony", "milionów"], value: 0 },
+        { forms: ["miliard", "miliardy", "miliardów"], value: 0 }
+      ];
+
+      let num = n;
+      let i = 0;
+      while (num > 0 && i < groups.length) {
+        groups[i].value = num % 1000;
+        num = Math.floor(num / 1000);
+        i++;
+      }
+
+      const parts = [];
+
+      // units group (index 0) handled later in loop too
+      for (let idx = groups.length - 1; idx >= 0; idx--) {
+        const g = groups[idx];
+        const val = g.value;
+        if (!val) continue;
+
+        if (idx === 1 && val === 1) {
+          // 1000 = "tysiąc" (bez "jeden")
+          parts.push("tysiąc");
+          continue;
+        }
+
+        const words = tripletToWords(val);
+        if (words) parts.push(words);
+
+        if (idx > 0) {
+          parts.push(pluralPL(val, g.forms));
+        }
+      }
+
+      return parts.join(" ").replace(/\s+/g, " ").trim();
+    }
+
+    function amountToWordsPL(amountNumber) {
+      if (!Number.isFinite(amountNumber)) return "";
+
+      const zl = Math.floor(amountNumber + 1e-9);
+      const gr = Math.round((amountNumber - zl) * 100);
+
+      const zlWords = numberToWordsPL(zl);
+      const zlUnit = pluralPL(zl, ["złoty", "złote", "złotych"]);
+      const grStr = String(gr).padStart(2, "0");
+
+      return `${zlWords} ${zlUnit} ${grStr}/100`;
+    }
+
     function updateAll() {
       setText("out-nr", $("in-nr").value);
       setText("out-date", $("in-date").value);
@@ -370,21 +535,35 @@ NIP/PESEL:</textarea>
       setText("out-me", $("in-me").value);
       setText("out-service", $("in-service").value);
 
-      const price = $("in-price").value;
-      setText("out-price-table", price);
-      setText("out-price-total", price);
+      const priceStr = $("in-price").value;
+      setText("out-price-table", priceStr);
+      setText("out-price-total", priceStr);
+
+      // words
+      const priceNum = parsePriceToNumber(priceStr);
+      setText("out-price-words", amountToWordsPL(priceNum));
+
+      // due date
+      const issueDate = parsePolishDate($("in-date").value);
+      const days = parseInt($("in-due-days").value || "0", 10);
+
+      if (issueDate && Number.isFinite(days)) {
+        const dueDate = addDays(issueDate, Math.max(0, days));
+        setText("out-due", `${days} dni (do: ${formatDatePL(dueDate)})`);
+      } else if (Number.isFinite(days)) {
+        setText("out-due", `${days} dni`);
+      } else {
+        setText("out-due", "");
+      }
 
       setText("out-bank", $("in-bank").value);
-      setText("out-due", $("in-due").value);
     }
 
     function init() {
-      // Logo fallback (pewniej niż inline onerror)
       const logo = $("logo-img");
       logo.addEventListener("error", () => { logo.src = "logo.png"; }, { once: true });
 
-      // Live update
-      ["in-nr","in-date","in-client","in-me","in-service","in-price","in-bank","in-due"].forEach(id => {
+      ["in-nr","in-date","in-client","in-me","in-service","in-price","in-bank","in-due-days"].forEach(id => {
         $(id).addEventListener("input", updateAll);
       });
 
