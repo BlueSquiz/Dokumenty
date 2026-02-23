@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Brief UGC — Generator | QUIETRITE</title>
+
+  <style>
+    :root{ --accent:#000; }
+
+    body{
+      font-family: Arial, sans-serif;
+      margin:0;
+      background:#f4f7f6;
+      font-size:11px;
+      color:#000;
+    }
+
+    .editor-panel{
+      background:#fff;
+      padding:10px;
+      border-bottom:2px solid var(--accent);
+      position:sticky;
+      top:0;
+      z-index:999;
+      box-shadow:0 2px 8px rgba(0,0,0,.12);
+    }
+
+    .top-row{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:10px;
+      flex-wrap:wrap;
+    }
+
+    .tabs{ display:flex; gap:8px; align-items:center; }
+
+    .tab{
+      border:1px solid #ddd;
+      background:#fff;
+      padding:10px 12px;
+      border-radius:10px;
+      font-weight:800;
+      cursor:pointer;
+      text-transform:uppercase;
+      font-size:12px;
+      letter-spacing:.04em;
+    }
+    .tab.active{
+      border-color:#000;
+      background:#000;
+      color:#fff;
+    }
+
+    .btn{
+      border:none;
+      background:#000;
+      color:#fff;
+      padding:10px 14px;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:800;
+      text-transform:uppercase;
+      font-size:12px;
+      letter-spacing:.04em;
+    }
+
+    .grid-inputs{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap:8px;
+      align-items:start;
+    }
+
+    label{
+      display:block;
+      font-weight:800;
+      font-size:9px;
+      color:#666;
+      text-transform:uppercase;
+      margin-bottom:3px;
+    }
+
+    input, textarea, select{
+      width:100%;
+      padding:10px;
+      border:1px solid #ccc;
+      border-radius:10px;
+      font-size:12px;
+      box-sizing:border-box;
+      background:#fff;
+    }
+    textarea{ resize:vertical; }
+
+    .row{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    .row > *{ flex:1; }
+    .tiny{ flex:0 0 140px; }
+
+    .hint{
+      font-size:11px;
+      color:#666;
+      margin-top:8px;
+    }
+
+    .view{
+      display:none;
+      padding:12px;
+      justify-content:center;
+      background:#525659;
+    }
+    .view.show{ display:flex; }
+
+    .a4-page{
+      width:210mm;
+      min-height:297mm;
+      background:#fff;
+      padding:10mm 15mm;
+      box-sizing:border-box;
+      display:flex;
+      flex-direction:column;
+      line-height:1.35;
+    }
+
+    .a4-scale{ transform-origin: top center; }
+    @media (max-width: 520px){ .a4-scale{ transform: scale(0.60); } }
+    @media (min-width: 521px) and (max-width: 900px){ .a4-scale{ transform: scale(0.75); } }
+
+    .header{ text-align:center; margin-bottom:10px; }
+    .logo{
+      max-width:110px;
+      height:auto;
+      display:inline-block;
+      margin-bottom:6px;
+    }
+    .title{
+      font-size:14px;
+      font-weight:900;
+      border-top:1.5px solid #000;
+      border-bottom:1.5px solid #000;
+      padding:4px 0;
+      margin:4px 0 8px 0;
+      text-transform:uppercase;
+      letter-spacing:2px;
+    }
+
+    .meta-line{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      font-size:10px;
+      margin-bottom:10px;
+      border-bottom:1px solid #eee;
+      padding-bottom:6px;
+    }
+
+    .section-h{
+      font-weight:900;
+      margin-top:10px;
+      font-size:11px;
+      text-transform:uppercase;
+      border-left:3px solid #000;
+      padding-left:6px;
+      break-after:avoid;
+      page-break-after:avoid;
+    }
+
+    .text{
+      margin:3px 0;
+      font-size:10.8px;
+    }
+
+    .box{
+      border:1px solid #eee;
+      border-left:3px solid #000;
+      padding:8px 10px;
+      margin:6px 0;
+      background:#fafafa;
+      white-space:pre-wrap;
+      font-size:10.8px;
+    }
+
+    .grid2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width: 700px){ .grid2{ grid-template-columns: 1fr; } }
+
+    .checkgrid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:8px;
+      margin-top:6px;
+    }
+    @media (max-width: 700px){ .checkgrid{ grid-template-columns: 1fr; } }
+
+    .chip{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      padding:8px 10px;
+      border:1px solid #e6e6e6;
+      border-radius:12px;
+      background:#fafafa;
+      font-size:11px;
+    }
+    .chip input{ width:auto; transform: scale(1.1); }
+
+    .signatures{
+      margin-top:auto;
+      padding-top:30px;
+      display:flex;
+      justify-content:space-between;
+      gap:20px;
+    }
+    .sig{
+      width:45%;
+      border-top:1px solid #000;
+      text-align:center;
+      padding-top:6px;
+      font-size:9px;
+      font-weight:900;
+      text-transform:uppercase;
+    }
+
+    /* Print */
+    @page{ size:A4; margin:12mm 15mm; }
+    @media print{
+      body{ background:#fff; }
+      .editor-panel{ display:none; }
+      .view{ display:flex !important; padding:0; background:#fff; }
+      .a4-scale{ transform:none !important; }
+      .a4-page{ width:100%; min-height:auto; padding:0; margin:0; }
+    }
+
+    .editor-wrap.hide{ display:none; }
+  </style>
+</head>
+
+<body>
+  <div class="editor-panel">
+    <div class="top-row">
+      <div class="tabs">
+        <button class="tab active" id="tab-edit" type="button">Edytor</button>
+        <button class="tab" id="tab-preview" type="button">Podgląd</button>
+      </div>
+      <button class="btn" id="btn-print" type="button">Drukuj / PDF</button>
+    </div>
+
+    <div class="editor-wrap" id="editorWrap">
+      <div class="grid-inputs">
+        <div>
+          <label>Nr briefu / Data</label>
+          <input type="text" id="in-nr" value="BRF/01/2026" />
+          <input type="text" id="in-date" value="23.02.2026" style="margin-top:8px;" />
+        </div>
+
+        <div>
+          <label>Marka / Klient</label>
+          <textarea id="in-client" rows="4">Nazwa firmy
+Osoba kontaktowa
+Email / IG</textarea>
+        </div>
+
+        <div>
+          <label>Produkt / Oferta</label>
+          <textarea id="in-product" rows="4">Nazwa produktu/usługi:
+Link do strony:
+Cena / oferta:</textarea>
+        </div>
+
+        <div>
+          <label>Cel kampanii</label>
+          <select id="in-goal">
+            <option value="Sprzedaż (konwersje)">Sprzedaż (konwersje)</option>
+            <option value="Lead (pozyskanie kontaktów)">Lead</option>
+            <option value="Instalacje aplikacji">Instalacje aplikacji</option>
+            <option value="Ruch na stronę">Ruch na stronę</option>
+            <option value="Świadomość / zasięg">Świadomość / zasięg</option>
+            <option value="Inne (opis w uwagach)">Inne</option>
+          </select>
+
+          <div class="row" style="margin-top:8px;">
+            <div>
+              <label>Platforma</label>
+              <select id="in-platform">
+                <option value="Meta (Reels)">Meta (Reels)</option>
+                <option value="TikTok">TikTok</option>
+                <option value="YouTube Shorts">YouTube Shorts</option>
+                <option value="Meta + TikTok">Meta + TikTok</option>
+                <option value="Meta + TikTok + Shorts">Meta + TikTok + Shorts</option>
+              </select>
+            </div>
+            <div class="tiny">
+              <label>Format</label>
+              <select id="in-format">
+                <option value="9:16">9:16</option>
+                <option value="1:1">1:1</option>
+                <option value="16:9">16:9</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label>Zakres</label>
+          <div class="row">
+            <div>
+              <label style="margin:0 0 3px 0;">Ilość wideo</label>
+              <input type="number" id="in-qty" value="3" min="1" step="1"/>
+            </div>
+            <div>
+              <label style="margin:0 0 3px 0;">Długość (sek.)</label>
+              <input type="text" id="in-length" value="20–40" />
+            </div>
+            <div>
+              <label style="margin:0 0 3px 0;">Język</label>
+              <input type="text" id="in-lang" value="PL" />
+            </div>
+          </div>
+
+          <label style="margin-top:10px;">Styl / forma</label>
+          <select id="in-style">
+            <option value="Talking head / UGC">Talking head / UGC</option>
+            <option value="Unboxing / prezentacja">Unboxing</option>
+            <option value="VSL / narracja sprzedażowa">VSL</option>
+            <option value="Testimonial / opinia">Testimonial</option>
+            <option value="Lifestyle / b-roll">Lifestyle / b-roll</option>
+            <option value="Inne (opis w uwagach)">Inne</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Warianty i testy</label>
+          <div class="checkgrid">
+            <label class="chip"><input type="checkbox" id="in-var-hooks" checked> Warianty hooków</label>
+            <label class="chip"><input type="checkbox" id="in-var-cta" checked> Warianty CTA</label>
+            <label class="chip"><input type="checkbox" id="in-var-cuts"> Różne montaże (A/B)</label>
+            <label class="chip"><input type="checkbox" id="in-subtitles" checked> Napisy (on-screen)</label>
+            <label class="chip"><input type="checkbox" id="in-vo"> Voice-over</label>
+            <label class="chip"><input type="checkbox" id="in-music" checked> Muzyka</label>
+          </div>
+
+          <label style="margin-top:10px;">Dodatkowe wymagania</label>
+          <textarea id="in-tech" rows="3">Branding / logo:
+Wymagania prawne (np. #reklama):
+Pliki od klienta (logo, packshot):</textarea>
+        </div>
+
+        <div>
+          <label>Odbiorca (avatar) + pain points</label>
+          <textarea id="in-audience" rows="6">Kim jest odbiorca:
+Największy problem:
+Największa obiekcja:
+Dlaczego ma uwierzyć:</textarea>
+        </div>
+
+        <div>
+          <label>USP / przekaz / benefity</label>
+          <textarea id="in-usp" rows="6">3 główne korzyści:
+Co wyróżnia produkt:
+Ton komunikacji (premium / luźno / ekspercko):</textarea>
+        </div>
+
+        <div>
+          <label>Przykłady / inspiracje (linki)</label>
+          <textarea id="in-examples" rows="6">Link 1:
+Link 2:
+Link 3:</textarea>
+        </div>
+
+        <div>
+          <label>Zakazy / claimsy / czego NIE mówić</label>
+          <textarea id="in-bans" rows="6">Zakazane słowa/claimsy:
+Czego unikać:
+Branżowe ograniczenia:</textarea>
+        </div>
+
+        <div>
+          <label>Proces + terminy</label>
+          <div class="row">
+            <div>
+              <label style="margin:0 0 3px 0;">Deadline (data)</label>
+              <input type="text" id="in-deadline" value="____.__.____" />
+            </div>
+            <div>
+              <label style="margin:0 0 3px 0;">Czas na feedback</label>
+              <input type="text" id="in-feedback" value="72h" />
+            </div>
+            <div>
+              <label style="margin:0 0 3px 0;">Kontakt</label>
+              <input type="text" id="in-contact" value="Email" />
+            </div>
+          </div>
+
+          <label style="margin-top:10px;">Dodatkowe uwagi</label>
+          <textarea id="in-notes" rows="5">Co jest kluczowe:
+Co jest “must-have”:
+Co jest “nice-to-have”:</textarea>
+
+          <div class="hint">Wypełnij w „EDYTOR”, przełącz na „PODGLĄD”, potem Drukuj/PDF.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PREVIEW -->
+  <div class="view show" id="previewWrap">
+    <div class="a4-scale">
+      <div class="a4-page">
+        <div class="header">
+          <img src="logo.PNG" class="logo" id="logo-img" alt="QUIETRITE logo">
+          <div class="title">Brief UGC / Video Ads</div>
+        </div>
+
+        <div class="meta-line">
+          <span><strong>Nr briefu:</strong> <span id="out-nr"></span></span>
+          <span><strong>Data:</strong> <span id="out-date"></span></span>
+        </div>
+
+        <div class="section-h">1. Podstawowe informacje</div>
+        <div class="grid2">
+          <div>
+            <div class="text"><strong>Klient / marka</strong></div>
+            <div class="box" id="out-client"></div>
+          </div>
+          <div>
+            <div class="text"><strong>Produkt / oferta</strong></div>
+            <div class="box" id="out-product"></div>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div>
+            <div class="text"><strong>Cel kampanii</strong></div>
+            <div class="box" id="out-goal"></div>
+          </div>
+          <div>
+            <div class="text"><strong>Platforma / format</strong></div>
+            <div class="box" id="out-platform-format"></div>
+          </div>
+        </div>
+
+        <div class="section-h">2. Zakres produkcji</div>
+        <div class="grid2">
+          <div>
+            <div class="text"><strong>Ilość / długość / język</strong></div>
+            <div class="box" id="out-scope"></div>
+          </div>
+          <div>
+            <div class="text"><strong>Styl / forma</strong></div>
+            <div class="box" id="out-style"></div>
+          </div>
+        </div>
+
+        <div class="text"><strong>Warianty i elementy</strong></div>
+        <div class="box" id="out-variants"></div>
+
+        <div class="text"><strong>Wymagania techniczne / pliki od klienta</strong></div>
+        <div class="box" id="out-tech"></div>
+
+        <div class="section-h">3. Odbiorca i przekaz</div>
+        <div class="grid2">
+          <div>
+            <div class="text"><strong>Odbiorca (avatar) + obiekcje</strong></div>
+            <div class="box" id="out-audience"></div>
+          </div>
+          <div>
+            <div class="text"><strong>USP / benefity / ton</strong></div>
+            <div class="box" id="out-usp"></div>
+          </div>
+        </div>
+
+        <div class="text"><strong>Przykłady / inspiracje</strong></div>
+        <div class="box" id="out-examples"></div>
+
+        <div class="text"><strong>Zakazy / claimsy / czego unikać</strong></div>
+        <div class="box" id="out-bans"></div>
+
+        <div class="section-h">4. Terminy i akceptacja</div>
+        <div class="grid2">
+          <div>
+            <div class="text"><strong>Deadline</strong></div>
+            <div class="box" id="out-deadline"></div>
+          </div>
+          <div>
+            <div class="text"><strong>Feedback / komunikacja</strong></div>
+            <div class="box" id="out-feedback"></div>
+          </div>
+        </div>
+
+        <div class="text"><strong>Dodatkowe uwagi</strong></div>
+        <div class="box" id="out-notes"></div>
+
+        <div class="signatures">
+          <div class="sig">Klient / Zamawiający</div>
+          <div class="sig">QUIETRITE</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    function setText(outId, value) {
+      const el = $(outId);
+      if (!el) return;
+      el.innerText = value ?? "";
+    }
+
+    function checkedLabel(id, label) {
+      return $(id).checked ? `✓ ${label}` : null;
+    }
+
+    function updateAll(){
+      setText("out-nr", $("in-nr").value);
+      setText("out-date", $("in-date").value);
+
+      setText("out-client", $("in-client").value);
+      setText("out-product", $("in-product").value);
+
+      setText("out-goal", $("in-goal").value);
+      setText("out-platform-format", `${$("in-platform").value} • ${$("in-format").value}`);
+
+      setText("out-scope", `Ilość: ${$("in-qty").value}\nDługość: ${$("in-length").value} s\nJęzyk: ${$("in-lang").value}`);
+      setText("out-style", $("in-style").value);
+
+      const variants = [
+        checkedLabel("in-var-hooks","Warianty hooków"),
+        checkedLabel("in-var-cta","Warianty CTA"),
+        checkedLabel("in-var-cuts","Różne montaże (A/B)"),
+        checkedLabel("in-subtitles","Napisy (on-screen)"),
+        checkedLabel("in-vo","Voice-over"),
+        checkedLabel("in-music","Muzyka")
+      ].filter(Boolean);
+
+      setText("out-variants", variants.length ? variants.join("\n") : "—");
+
+      setText("out-tech", $("in-tech").value);
+
+      setText("out-audience", $("in-audience").value);
+      setText("out-usp", $("in-usp").value);
+      setText("out-examples", $("in-examples").value);
+      setText("out-bans", $("in-bans").value);
+
+      setText("out-deadline", $("in-deadline").value);
+      setText("out-feedback", `Czas na feedback: ${$("in-feedback").value}\nKanał kontaktu: ${$("in-contact").value}`);
+
+      setText("out-notes", $("in-notes").value);
+    }
+
+    function showTab(which){
+      const editorWrap = $("editorWrap");
+      const previewWrap = $("previewWrap");
+      const tabEdit = $("tab-edit");
+      const tabPreview = $("tab-preview");
+
+      if(which === "edit"){
+        editorWrap.classList.remove("hide");
+        previewWrap.classList.remove("show");
+        tabEdit.classList.add("active");
+        tabPreview.classList.remove("active");
+      } else {
+        editorWrap.classList.add("hide");
+        previewWrap.classList.add("show");
+        tabPreview.classList.add("active");
+        tabEdit.classList.remove("active");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }
+
+    function init(){
+      // domyślnie: EDYTOR (mobile-friendly)
+      showTab("edit");
+
+      const logo = $("logo-img");
+      logo.addEventListener("error", () => { logo.src = "logo.png"; }, { once: true });
+
+      const ids = [
+        "in-nr","in-date","in-client","in-product","in-goal","in-platform","in-format",
+        "in-qty","in-length","in-lang","in-style","in-tech","in-audience","in-usp",
+        "in-examples","in-bans","in-deadline","in-feedback","in-contact","in-notes"
+      ];
+      ids.forEach(id => {
+        $(id).addEventListener("input", updateAll);
+        $(id).addEventListener("change", updateAll);
+      });
+
+      ["in-var-hooks","in-var-cta","in-var-cuts","in-subtitles","in-vo","in-music"].forEach(id => {
+        $(id).addEventListener("change", updateAll);
+      });
+
+      $("tab-edit").addEventListener("click", () => showTab("edit"));
+      $("tab-preview").addEventListener("click", () => showTab("preview"));
+
+      $("btn-print").addEventListener("click", () => {
+        showTab("preview");
+        setTimeout(() => window.print(), 50);
+      });
+
+      updateAll();
+    }
+
+    document.addEventListener("DOMContentLoaded", init);
+  </script>
+</body>
+</html>
