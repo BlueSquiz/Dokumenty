@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Rachunek - QUIETRITE</title>
+    <style>
+        :root { --accent: #000000; }
+        body { font-family: 'Arial', sans-serif; margin: 0; background: #f4f7f6; font-size: 11px; }
+        .editor-panel { background: #fff; padding: 10px; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .grid-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; }
+        label { display: block; font-weight: bold; font-size: 8px; color: #666; text-transform: uppercase; }
+        input, textarea { width: 100%; padding: 5px; border: 1px solid #ccc; border-radius: 4px; font-size: 11px; }
+        button { background: var(--accent); color: white; border: none; padding: 10px; cursor: pointer; font-weight: bold; width: 100%; text-transform: uppercase; margin-top: 5px; }
+
+        .preview-area { padding: 15px; display: flex; justify-content: center; background: #525659; }
+        .a4-page { 
+            width: 210mm; height: 297mm; background: white; padding: 15mm; 
+            box-sizing: border-box; display: flex; flex-direction: column; color: #000; line-height: 1.4;
+        }
+
+        .header { text-align: center; margin-bottom: 20px; }
+        .logo { max-width: 120px; height: auto; }
+        .title { font-size: 18px; font-weight: bold; border-top: 2px solid #000; border-bottom: 2px solid #000; padding: 5px 0; margin: 10px 0; text-transform: uppercase; letter-spacing: 3px; }
+        
+        .meta-line { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .parties { display: flex; justify-content: space-between; margin-bottom: 30px; gap: 30px; }
+        .party { width: 48%; font-size: 10px; }
+        .party strong { display: block; border-bottom: 1px solid #000; margin-bottom: 5px; text-transform: uppercase; font-size: 9px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background: #f9f9f9; text-align: left; padding: 10px; border-bottom: 2px solid #000; text-transform: uppercase; font-size: 9px; }
+        td { padding: 10px; border-bottom: 1px solid #eee; font-size: 11px; }
+        
+        .summary { margin-left: auto; width: 40%; margin-top: 20px; text-align: right; font-size: 12px; }
+        .total { font-size: 16px; font-weight: bold; border-top: 2px solid #000; padding-top: 5px; margin-top: 5px; }
+        
+        .bank-info { margin-top: 40px; padding: 15px; background: #f9f9f9; border-left: 4px solid #000; }
+        .bank-info strong { display: block; font-size: 9px; text-transform: uppercase; color: #666; }
+
+        .signature-area { margin-top: auto; padding-top: 50px; text-align: right; }
+        .sig-box { display: inline-block; width: 200px; border-top: 1px solid #000; text-align: center; padding-top: 5px; font-size: 9px; font-weight: bold; text-transform: uppercase; }
+
+        @media print {
+            .editor-panel { display: none; }
+            .preview-area { padding: 0; background: white; }
+            .a4-page { box-shadow: none; margin: 0; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="editor-panel">
+    <div class="grid-inputs">
+        <div>
+            <label>Nr Rachunku / Data</label>
+            <input type="text" id="in-nr" value="RCH/01/2026" oninput="update()">
+            <input type="text" id="in-date" value="23.02.2026" oninput="update()">
+        </div>
+        <div>
+            <label>Nabywca (Klient)</label>
+            <textarea id="in-client" rows="3" oninput="update()">Imię Nazwisko / Firma&#10;Adres Klienta&#10;NIP: </textarea>
+        </div>
+        <div>
+            <label>Sprzedawca</label>
+            <textarea id="in-me" rows="3" oninput="update()">Krystian Stępniak&#10;Olsztyn 11-041&#10;NIP/PESEL: </textarea>
+        </div>
+        <div>
+            <label>Nazwa usługi / Kwota</label>
+            <input type="text" id="in-service" value="Wykonanie wideo - Pakiet PRO" oninput="update()">
+            <input type="text" id="in-price" value="2500,00 PLN" oninput="update()">
+        </div>
+        <div>
+            <label>Numer Konta Bankowego</label>
+            <input type="text" id="in-bank" value="00 0000 0000 0000 0000 0000 0000" oninput="update()">
+        </div>
+    </div>
+    <button onclick="window.print()">WYSTAW RACHUNEK (DRUKUJ)</button>
+</div>
+
+<div class="preview-area">
+    <div class="a4-page">
+        <div class="header">
+            <img src="logo.PNG" class="logo" id="logo-img" onerror="this.src='logo.png'">
+            <div class="title">Rachunek</div>
+        </div>
+
+        <div class="meta-line">
+            <span><strong>Numer rachunku:</strong> <span id="out-nr"></span></span>
+            <span><strong>Data wystawienia:</strong> <span id="out-date"></span></span>
+        </div>
+
+        <div class="parties">
+            <div class="party"><strong>Sprzedawca:</strong><span id="out-me" style="white-space: pre-wrap;"></span></div>
+            <div class="party"><strong>Nabywca:</strong><span id="out-client" style="white-space: pre-wrap;"></span></div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Nazwa usługi / Przedmiot umowy</th>
+                    <th style="text-align: right;">Wartość</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="out-service"></td>
+                    <td id="out-price-table" style="text-align: right; font-weight: bold;"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="summary">
+            <div>Suma do zapłaty:</div>
+            <div class="total" id="out-price-total"></div>
+        </div>
+
+        <div class="bank-info">
+            <strong>Forma płatności: Przelew</strong>
+            <strong>Termin płatności: 7 dni</strong>
+            <p style="margin: 5px 0 0 0; font-size: 12px; font-weight: bold;" id="out-bank"></p>
+        </div>
+
+        <div class="signature-area">
+            <div class="sig-box">Wystawca rachunku</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function update() {
+        ['nr', 'date', 'client', 'me', 'service', 'price', 'bank'].forEach(id => {
+            const val = document.getElementById('in-' + id).value;
+            const out = document.getElementById('out-' + id);
+            if(out) out.innerText = val;
+            
+            // Specyficzne pola dla tabeli i podsumowania
+            if(id === 'price') {
+                document.getElementById('out-price-table').innerText = val;
+                document.getElementById('out-price-total').innerText = val;
+            }
+        });
+    }
+    window.onload = update;
+</script>
+</body>
+</html>
