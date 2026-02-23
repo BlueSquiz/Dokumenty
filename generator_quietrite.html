@@ -5,33 +5,33 @@
     <title>Umowa o Dzieło - QUIETRITE</title>
     <style>
         :root { --accent: #000000; }
-        body { font-family: 'Arial', sans-serif; margin: 0; background: #f4f7f6; font-size: 11px; }
+        body { font-family: 'Arial', sans-serif; margin: 0; background: #f4f7f6; font-size: 10px; }
         .editor-panel { background: #fff; padding: 10px; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .grid-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
-        label { display: block; font-weight: bold; font-size: 9px; color: #666; text-transform: uppercase; }
-        input, textarea, select { width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 11px; }
-        button { background: var(--accent); color: white; border: none; padding: 8px; cursor: pointer; font-weight: bold; width: 100%; text-transform: uppercase; margin-top: 5px; }
+        label { display: block; font-weight: bold; font-size: 8px; color: #666; text-transform: uppercase; }
+        input, textarea, select { width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 10px; }
+        button { background: var(--accent); color: white; border: none; padding: 10px; cursor: pointer; font-weight: bold; width: 100%; text-transform: uppercase; margin-top: 5px; }
 
         .preview-area { padding: 10px; display: flex; justify-content: center; background: #525659; }
         .a4-page { 
             width: 210mm; min-height: 297mm; background: white; padding: 10mm 15mm; 
-            box-sizing: border-box; display: flex; flex-direction: column; color: #000; line-height: 1.25;
+            box-sizing: border-box; display: flex; flex-direction: column; color: #000; line-height: 1.3;
         }
 
-        .header { text-align: center; margin-bottom: 5px; }
-        .logo { max-width: 110px; height: auto; }
-        .title { font-size: 14px; font-weight: bold; border-top: 1.5px solid #000; border-bottom: 1.5px solid #000; padding: 2px 0; margin: 5px 0; text-transform: uppercase; letter-spacing: 2px; }
+        .header { text-align: center; margin-bottom: 10px; }
+        .logo { max-width: 100px; height: auto; }
+        .title { font-size: 14px; font-weight: bold; border-top: 1.5px solid #000; border-bottom: 1.5px solid #000; padding: 3px 0; margin: 5px 0; text-transform: uppercase; letter-spacing: 2px; }
         
-        .meta-line { display: flex; justify-content: space-between; font-size: 9px; margin-bottom: 8px; border-bottom: 1px solid #eee; }
+        .meta-line { display: flex; justify-content: space-between; font-size: 9px; margin-bottom: 10px; border-bottom: 1px solid #eee; }
         .parties { display: flex; justify-content: space-between; margin-bottom: 10px; gap: 20px; }
-        .party { width: 48%; font-size: 10px; }
-        .party strong { display: block; border-bottom: 1px solid #000; margin-bottom: 2px; text-transform: uppercase; font-size: 9px; }
+        .party { width: 48%; font-size: 9px; }
+        .party strong { display: block; border-bottom: 1px solid #000; margin-bottom: 3px; text-transform: uppercase; font-size: 8px; }
         
-        .section-h { font-weight: bold; margin-top: 8px; font-size: 10px; text-transform: uppercase; border-left: 3px solid #000; padding-left: 6px; }
-        .text { text-align: justify; margin: 2px 0; font-size: 10px; }
+        .section-h { font-weight: bold; margin-top: 10px; font-size: 10px; text-transform: uppercase; border-left: 3px solid #000; padding-left: 6px; }
+        .text { text-align: justify; margin: 2px 0; font-size: 9.5px; }
         
         .signatures { margin-top: 40px; display: flex; justify-content: space-between; }
-        .sig-box { width: 40%; border-top: 1px solid #000; text-align: center; padding-top: 3px; font-size: 8px; font-weight: bold; }
+        .sig-box { width: 40%; border-top: 1px solid #000; text-align: center; padding-top: 4px; font-size: 8px; font-weight: bold; }
 
         @media print {
             .editor-panel { display: none; }
@@ -51,26 +51,24 @@
         </div>
         <div>
             <label>Zamawiający</label>
-            <textarea id="in-client" rows="2" oninput="update()">Imię Nazwisko / Firma&#10;Adres Klienta&#10;NIP: </textarea>
+            <textarea id="in-client" rows="2" oninput="update()">Imię Nazwisko / Firma&#10;Adres Klienta&#10;Email: </textarea>
         </div>
         <div>
-            <label>Wykonawca (Krystian Stępniak)</label>
-            <textarea id="in-me" rows="2" oninput="update()">Krystian Stępniak&#10;Olsztyn 11-041&#10;NIP/PESEL: </textarea>
+            <label>Wykonawca</label>
+            <textarea id="in-me" rows="2" oninput="update()">Krystian Stępniak&#10;Olsztyn 11-041&#10;Email: kontakt@quietrite.pl</textarea>
         </div>
         <div>
-            <label>Usługa</label>
+            <label>Pakiet</label>
             <select id="in-service" onchange="updatePrice()">
-                <option value="Pakiet BASIC" data-p="1100,00 PLN" data-type="std">Pakiet BASIC (1100 zł)</option>
-                <option value="Pakiet PRO" data-p="2500,00 PLN" data-type="std">Pakiet PRO (2500 zł)</option>
-                <option value="Pakiet ELITE" data-p="5000,00 PLN" data-type="elite">Pakiet ELITE (5000 zł)</option>
-                <option value="ADS USAGE (30 dni)" data-p="1000,00 PLN" data-type="std">Ads Usage - Start (1000 zł)</option>
-                <option value="ADS USAGE (Kolejne 30 dni)" data-p="900,00 PLN" data-type="std">Ads Usage - Kontynuacja (900 zł)</option>
+                <option value="Pakiet BASIC" data-p="1100,00 PLN" data-type="std">Pakiet BASIC</option>
+                <option value="Pakiet PRO" data-p="2500,00 PLN" data-type="std">Pakiet PRO</option>
+                <option value="Pakiet ELITE" data-p="5000,00 PLN" data-type="elite">Pakiet ELITE</option>
+                <option value="ADS USAGE (30 dni)" data-p="1000,00 PLN" data-type="std">Ads Usage (30 dni)</option>
             </select>
-            <label>Koszt poprawki (poza pakietem)</label>
-            <input type="text" id="in-edit-cost" value="100,00 PLN" oninput="update()">
+            <input type="text" id="in-edit-cost" value="100,00 PLN" oninput="update()" style="margin-top:5px;">
         </div>
     </div>
-    <button onclick="window.print()">Pobierz Umowę (1 STRONA)</button>
+    <button onclick="window.print()">GENERUJ UMOWĘ</button>
 </div>
 
 <div class="preview-area">
@@ -81,8 +79,8 @@
         </div>
 
         <div class="meta-line">
-            <span><strong>Nr:</strong> <span id="out-nr"></span></span>
-            <span><strong>Data:</strong> <span id="out-date"></span></span>
+            <span><strong>Nr umowy:</strong> <span id="out-nr"></span></span>
+            <span><strong>Data zawarcia:</strong> <span id="out-date"></span></span>
         </div>
 
         <div class="parties">
@@ -90,19 +88,21 @@
             <div class="party"><strong>Przyjmujący zamówienie:</strong><span id="out-me" style="white-space: pre-wrap;"></span></div>
         </div>
 
-        <div class="section-h">§1. Przedmiot Umowy i Prawa Autorskie</div>
+        <div class="section-h">§1. Przedmiot Umowy i Prawa</div>
         <div class="text">1. Wykonawca zobowiązuje się do wykonania dzieła: <strong id="out-subject"></strong>.</div>
-        <div class="text">2. Przy pakietach BASIC/PRO/ELITE, Wykonawca przenosi na Zamawiającego autorskie prawa majątkowe do organicznej publikacji treści z chwilą zapłaty.</div>
-        <div class="text">3. Przy usłudze Ads Usage, Wykonawca udziela czasowej licencji na wykorzystanie dzieła w płatnych kampaniach reklamowych (Meta, TikTok, YT). Emisja reklam bez opłaconej licencji jest naruszeniem umowy.</div>
+        <div class="text">2. Przedmiotem umowy jest gotowy plik wideo w formacie cyfrowym. Wykonawca **nie jest zobowiązany** do przekazania surowych materiałów (RAW), plików projektowych ani elementów składowych, chyba że strony ustalą inaczej w formie pisemnej.</div>
+        <div class="text">3. Wykonawca przenosi na Zamawiającego prawa do publikacji organicznej (pakiety treści) lub udziela licencji na publikację płatną (Ads Usage).</div>
+        <div class="text">4. Wykonawca zachowuje prawo do wykorzystania dzieła w swoim portfolio.</div>
 
-        <div class="section-h">§2. Wynagrodzenie i Zasady Poprawek</div>
-        <div class="text">1. Strony ustalają wynagrodzenie ryczałtowe: <strong id="out-price"></strong>.</div>
-        <div class="text">2. Zapłata nastąpi przelewem w terminie 7 dni od dnia odbioru dzieła.</div>
+        <div class="section-h">§2. Wynagrodzenie i Odbiór</div>
+        <div class="text">1. Strony ustalają wynagrodzenie: <strong id="out-price"></strong>.</div>
+        <div class="text">2. Brak uwag w ciągu 3 dni roboczych od wysłania plików uznaje się za odbiór dzieła bez zastrzeżeń.</div>
         <div class="text" id="revision-text"></div>
+        <div class="text">4. Zapłata nastąpi w ciągu 7 dni od odbioru dzieła.</div>
 
         <div class="section-h">§3. Postanowienia Końcowe</div>
-        <div class="text">1. W sprawach nieuregulowanych stosuje się przepisy Kodeksu Cywilnego.</div>
-        <div class="text">2. Wszelkie zmiany wymagają formy pisemnej. Umowę sporządzono w dwóch egzemplarzach.</div>
+        <div class="text">1. Komunikacja odbywa się drogą e-mailową na adresy wskazane powyżej.</div>
+        <div class="text">2. W sprawach nieuregulowanych stosuje się przepisy Kodeksu Cywilnego.</div>
 
         <div class="signatures">
             <div class="sig-box">ZAMAWIAJĄCY</div>
@@ -115,21 +115,18 @@
     function updatePrice() {
         const sel = document.getElementById('in-service');
         const opt = sel.options[sel.selectedIndex];
-        const price = opt.getAttribute('data-p');
         const type = opt.getAttribute('data-type');
-        const editCost = document.getElementById('in-edit-cost').value;
-
-        document.getElementById('out-price').innerText = price;
+        document.getElementById('out-price').innerText = opt.getAttribute('data-p');
         
         const revEl = document.getElementById('revision-text');
+        const cost = document.getElementById('in-edit-cost').value;
         if (type === 'elite') {
-            revEl.innerHTML = `3. W ramach pakietu ELITE Zamawiającemu przysługują <strong>2 bezpłatne tury poprawek</strong>. Każda kolejna tura płatna jest: <strong>${editCost}</strong>.`;
+            revEl.innerHTML = `3. W pakiecie ELITE przysługują <strong>2 bezpłatne tury poprawek</strong>. Kolejne tury: <strong>${cost}</strong>.`;
         } else {
-            revEl.innerHTML = `3. W wybranym pakiecie każda tura poprawek merytorycznych płatna jest dodatkowo: <strong>${editCost}</strong>.`;
+            revEl.innerHTML = `3. W tym pakiecie każda tura poprawek merytorycznych płatna jest: <strong>${cost}</strong>.`;
         }
         update();
     }
-
     function update() {
         ['nr', 'date', 'client', 'me'].forEach(id => {
             const el = document.getElementById('out-' + id);
@@ -137,7 +134,6 @@
         });
         document.getElementById('out-subject').innerText = document.getElementById('in-service').value;
     }
-    
     window.onload = () => { updatePrice(); update(); };
 </script>
 </body>
